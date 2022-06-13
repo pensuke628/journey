@@ -1,0 +1,27 @@
+# rubyのバージョンを指定する
+FROM ruby:3.0.2
+
+# 環境変数を定義する
+ENV APP /journey/backend
+
+# Docker内部でworkdirの場所と名前を指定する
+WORKDIR $APP
+
+# Gemfile,Gemfile.lockをDocker内部にコピーする
+COPY Gemfile Gemfile.lock $APP/
+
+# bunderをインストールして、bundler経由でgemをインストールする
+RUN gem install bundler
+RUN bundle install
+
+# ホストのカレントディレクトリをDockerにコピーする
+COPY . $APP/
+RUN mkdir -p tmp/sockets
+
+# nginxから参照するための設定
+VOLUME ["/journey/backend/tmp"]
+VOLUME ["/journey/backend/public"]
+
+# 起動スクリプトに実行権限を与えて、起動スクリプトを実行する
+RUN chmod 744 /journey/backend/start.sh
+CMD ["sh", "/journey/backend/start.sh"]

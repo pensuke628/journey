@@ -1,0 +1,28 @@
+default: &default
+  adapter: mysql2
+  encoding: utf8mb4
+  charset: utf8mb4
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+
+local: &local
+  password: password
+  host: db
+
+development:
+  <<: *default
+  <<: *local
+  database: journey_development
+
+test:
+  <<: *default
+  <<: *local
+  database: journey_test
+  host: <%= ENV.fetch("APP_DATABASE_HOST") { 'db' } %>
+
+production:
+  <<: *default
+  database: journey_production
+  url: <%= ENV['DATABASE_URL'] %>
