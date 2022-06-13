@@ -1,0 +1,60 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# ---frontend---
+
+# dependencies
+/frontend/node_modules
+
+# testing
+/frontend/coverage
+
+# production
+/frontend/build
+
+# misc
+/frontend/.DS_Store
+/frontend/yarn-error.log*
+/frontend/package-lock.json
+
+# git
+/frontend/.git
+/frontend/.gitignore
+
+# environment variable
+/frontend/.env
+
+# ---backend---
+# Ignore bundler config.
+/backend/.bundle
+/backend/vendor/bundle
+
+# Ignore all logfiles and tempfiles.
+/backend/log/*
+/backend/tmp/*
+!/backend/log/.keep
+!/backend/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/backend/tmp/pids/*
+!/backend/tmp/pids/
+!/backend/tmp/pids/.keep
+
+# Ignore uploaded files in development.
+/backend/storage/*
+!/backend/storage/.keep
+/backend/public/uploads/
+/backend/.byebug_history
+/backend/.rspec
+
+/backend/spec/tmp/
+
+# Ignore master key for decrypting credentials and more.
+/backend/config/master.key
+
+# carrierwaveでアップロードした画像ファイルはgit管理外とする
+
+# ---mysql---
+/mysql_data
+
+# ---nginx---
+/nginx
