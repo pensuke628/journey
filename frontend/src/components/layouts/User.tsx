@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
+// MUIのimport
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -8,34 +9,33 @@ import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+
+// コンポーネントのimport
 import FollowButton from 'components/utils/FollowButton';
 import UnfollowButton from 'components/utils/UnfollowButton';
 
-import { AuthContext, RelationshipContext } from 'App';
 // interfaceのimport
-import { Follow, Notification } from 'interfaces/index';
+import { Follow, Notification, UserData } from 'interfaces/index';
 
+//  Contextのimport
+import { AuthContext, RelationshipContext } from 'App';
+
+// apiを叩く関数のimport
 import { follow, unfollow } from 'lib/api/relationships';
 import { createNotification } from 'lib/api/notification';
 
+// default画像のimport
+import defaultBckgroundImage from 'defaultBackgroundImage.png';
 
-type Props = {
-  id: number
-  name: string
-  profile: string
-  avatar: string
-}
-
-const User: React.FC<Props> = (props) => {
+const User: React.FC<UserData> = (props) => {
   const { currentUser, isSignedIn } = useContext(AuthContext);
   const { followingUsers, setFollowingUsers } = useContext(RelationshipContext);
-
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
   // フォローしているかどうか、stateに初期値を設定する
   const checkFollow = () => {
     try {
-      if (followingUsers.includes(props.id)) {
+      if (followingUsers.some(followinguser => followinguser.id === props.id)) {
         setIsFollowing(true);
       }
     } catch (error) {
@@ -69,9 +69,8 @@ const User: React.FC<Props> = (props) => {
 
     try {
       const res = await follow(params);
-      // console.log(res);
       if (res.status === 200) {
-        setFollowingUsers([props.id, ...followingUsers]);
+        setFollowingUsers([props, ...followingUsers]);
         setIsFollowing(true);
         console.log('ユーザーをフォローしました');
         const notification = await createNotification(notificationParams);
@@ -95,7 +94,7 @@ const User: React.FC<Props> = (props) => {
       const res = await unfollow(params);
       // console.log(res);
       if (res.status === 200) {
-        const newfollowing = followingUsers.filter(id => id !== props.id);
+        const newfollowing = followingUsers.filter(followinguser => followinguser.id !== props.id);
         setFollowingUsers([...newfollowing]);
         setIsFollowing(false);
         console.log('ユーザーのフォローを解除しました');
@@ -115,18 +114,21 @@ const User: React.FC<Props> = (props) => {
     >
       <CardMedia
         component="img"
+        image={
+          props.backgroundImage ? props.backgroundImage : defaultBckgroundImage
+        }
         alt='Image for user_background_image'
+        height='80'
       />
       <CardContent>
         <Grid container>
           <Grid item xs={6}>
             <Avatar></Avatar>
-            <Typography>
-              <Link
-                to ={`/users/${props.id}`}
-              >
+            <Typography
+              component={RouterLink}
+              to={`/users/${props.id}`}
+            >
                 {props.name}
-              </Link>
             </Typography>
             <Typography>
               { props.profile }
@@ -136,12 +138,10 @@ const User: React.FC<Props> = (props) => {
             <CardActions>
               {
                 isSignedIn && !(currentUser?.id === props.id) ? (                
-                  !isFollowing ? (
-                    // <FollowButton onClick={handleFollow}/>
-                    <FollowButton onClick={userFollow}/>
-                  ) : (
-                    // <UnfollowButton onClick={handleUnfollow}/>
+                  isFollowing ? (
                     <UnfollowButton onClick={userUnfollow}/>
+                  ) : (
+                    <FollowButton onClick={userFollow}/>
                   )
                 ) : null
               }

@@ -13,9 +13,7 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 
 // MUIIconsのimport
-import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
-import PersonIcon from '@mui/icons-material/Person';
 
 // ReactHooksFormのimport
 import { useForm, Controller } from 'react-hook-form';
@@ -30,11 +28,12 @@ import { UserSchema } from "schema/user";
 import { AuthContext } from 'App';
 import AlertMessage from 'components/utils/AlertMessage';
 import { signUp } from 'lib/api/auth';
+import { Typography } from '@mui/material';
 
 const CustomCard = styled(Card)({
   flexGrow: 1,
   margin: '4rem 1rem',
-  maxWidth: 400,
+  maxWidth: 650,
 });
 
 const CustomCardHeader = styled(CardHeader)({
@@ -44,9 +43,10 @@ const CustomCardHeader = styled(CardHeader)({
 
 const FlexBox = styled(Box) ({
   display: 'flex',
+  margin: '1rem'
 });
 
-const SignIn: React.FC = () => {
+const PasswordReset: React.FC = () => {
   const navigate = useNavigate();
   const {
     handleSubmit,
@@ -103,40 +103,20 @@ const SignIn: React.FC = () => {
               }}
             >
               <CustomCard>
-                <CustomCardHeader title='新規登録'/>
+                <CustomCardHeader title='パスワードの再設定'/>
                 <CardContent>
-                  <FlexBox>
-                    <PersonIcon sx={{ color: 'action.active', my: 'auto' }}/>
-                    <Controller
-                      name='name'
-                      control={control}
-                      defaultValue={''}
-                      render={({field}) => (
-                        <TextField
-                        {...field}
-                        label='ユーザー名'
-                        error={'name' in errors}
-                        helperText={errors.name?.message}
-                        />
-                      )}
-                    />
-                  </FlexBox>
-                  <FlexBox>
-                    <EmailIcon sx={{ color: 'action.active', my: 'auto' }}/>
-                    <Controller
-                      name='email'
-                      control={control}
-                      defaultValue={''}
-                      render={({field}) => (
-                        <TextField
-                        {...field}
-                        label='Email'
-                        error={'email' in errors}
-                        helperText={errors.email?.message}
-                        />
-                      )}
-                    />
-                  </FlexBox>
+                  <Box
+                    sx={{
+                      textAlign: 'left'
+                    }}
+                  >
+                    <Typography>
+                      ログインパスワードの再設定を行います。
+                    </Typography>
+                    <Typography>
+                      以下の項目を入力し、「確認メールを送信する」ボタンをクリックしてください。
+                    </Typography>
+                  </Box>
                   <FlexBox>
                     <LockIcon sx={{ color: 'action.active', my: 'auto' }}/>
                     <Controller
@@ -154,32 +134,12 @@ const SignIn: React.FC = () => {
                       )}
                     />
                   </FlexBox>
-                  <FlexBox>
-                    <LockIcon sx={{ color: 'white' }}/>
-                    <Controller
-                      name='passwordConfirmation'
-                      control={control}
-                      defaultValue={''}
-                      render={({field}) => (
-                        <TextField
-                        {...field}
-                        label='パスワード(確認)'
-                        type='password'
-                        error={'passwordConfirmation' in errors}
-                        helperText={errors.passwordConfirmation?.message}
-                        sx={{
-                          marginLeft: 'auto'
-                        }}
-                        />
-                      )}
-                    />
-                  </FlexBox>
                   <Button
                     type='submit'
                     variant='contained'
                     sx = {{ mt: 3 }}
                   >
-                    新規登録
+                    確認メールを送信する
                   </Button>
                 </CardContent>
               </CustomCard>
@@ -203,4 +163,4 @@ const SignIn: React.FC = () => {
   );
 }
 
-export default SignIn
+export default PasswordReset
