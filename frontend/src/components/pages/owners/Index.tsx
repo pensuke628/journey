@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
+// MUIのimport
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -8,6 +9,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
+//  Contextのimport
 import { OwnerContext } from 'App';
 
 const styles = {
@@ -32,7 +34,7 @@ const OwnerIndex: React.FC = () => {
               <Grid item xs={4}>
                 <CardMedia
                   component='img'
-                  image={house.image}
+                  image={house.image.url}
                   alt='Image for house'
                 />
               </Grid>
@@ -60,7 +62,9 @@ const OwnerIndex: React.FC = () => {
         to='/owners'
         variant='contained'
         sx = {{ m:2 }}
-      >新規登録する</Button>
+      >
+        新規登録する
+      </Button>
     </>
   );
 }

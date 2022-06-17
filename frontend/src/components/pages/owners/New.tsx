@@ -1,22 +1,32 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
+// MUIのimport
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 
-import { HouseData } from 'interfaces/index';
-import { getHouses } from 'lib/api/house';
+// MUIIconsのimport
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import HouseIcon from '@mui/icons-material/House';
-import { CardActions, CardHeader } from '@mui/material';
-import { createOwner } from 'lib/api/owner';
+
+// interfaceのimport
+import { HouseData } from 'interfaces/index';
+
+// Contextのimport
 import { AuthContext } from 'App';
+
+// apiを叩く関数のimport
+import { getHouses } from 'lib/api/house';
+import { createOwner } from 'lib/api/owner';
 
 const styles = {
   searcharea: {
@@ -26,8 +36,7 @@ const styles = {
     display: 'flex',
   },
   cardRoot: {
-    margin: '0 1rem',
-    height: '150px',
+    margin: '1rem',
     display: 'flex',
     border: '1px solid #000'
   }
@@ -123,14 +132,14 @@ const OwnerNew: React.FC  = () => {
             <Grid
               container
             >
-              <Grid item xs={3}>
+              <Grid item xs={6} sm={3}>
                 <CardMedia
                   component='img'
-                  image={house.image}
+                  image={house.image.url}
                   alt='Image for house'
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={6} sm={6}>
                 <CardContent>
                   <Typography>
                     <RouterLink to ={`/houses/${house.id}`}>
@@ -145,7 +154,7 @@ const OwnerNew: React.FC  = () => {
                   </Typography>
                 </CardContent>
               </Grid>
-              <Grid item xs={3}>
+              <Grid item xs={6} sm={3} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
                 <CardActions>
                   <Button
                     variant='contained'
@@ -159,15 +168,26 @@ const OwnerNew: React.FC  = () => {
           </Card>
           )
         }
-      <Typography>
-        施設は見つかりましたか？見つからなければ...
-      </Typography>
-      <Button
-        component={RouterLink}
-        to='/houses/new'
-      >
-        施設新規登録
-      </Button>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <Box sx={{ display: 'flex', mx: 4,  my: 1 }}>
+            <Typography>
+              施設は見つかりましたか？見つからなければ...
+            </Typography>
+            <ArrowForwardIcon/>
+          </Box>
+          <Button
+            component={RouterLink}
+            to='/houses/new'
+            variant='contained'
+          >
+            施設新規登録
+          </Button>
+        </Box>
       </Container>
     </>
   );

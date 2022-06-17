@@ -4,10 +4,12 @@ import Button from '@mui/material/Button';
 
 // コンポーネントのimport
 import House from "components/layouts/House";
+
 // interfaceのimport
 import { HouseData } from "interfaces/index";
 import { BookmarkContext } from 'App';
 
+// apiを叩く関数のimport
 import { destroyBookmark } from 'lib/api/bookmark';
 
 const UserBookmarks: React.FC = () => {
@@ -44,7 +46,7 @@ const UserBookmarks: React.FC = () => {
             id={house.id}
             name={house.name}
             prefectures={house.prefectures}
-            image={house.image}
+            image={house.image.url}
             bookmark={onClick}
             unbookmark={() => handleDestroyBookmark(house)}
           />
@@ -52,10 +54,12 @@ const UserBookmarks: React.FC = () => {
       })}
       <Button
         component={Link}
-        to="/houses/new"
-        variant="contained"
+        to='/houses/new'
+        variant='contained'
         sx = {{ m:2 }}
-      >新規登録する</Button>
+      >
+        新規登録する
+      </Button>
     </>
   );
 }

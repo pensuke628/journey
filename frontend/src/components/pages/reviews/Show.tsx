@@ -37,7 +37,6 @@ import { ReviewUpdateSchema } from 'schema/review';
 import { deleteRequest } from 'lib/api/owner';
 import { createComment, updateComment, destroyComment } from 'lib/api/comment';
 import { createNotification } from 'lib/api/notification';
-import { NumberLiteralType } from 'typescript';
 
 const styles = {
   replybox: {
@@ -73,7 +72,8 @@ const ReviewShow: React.FC = () => {
     createdAt: new Date(),
     updatedAt: new Date(),
     comments: [],
-    tags: []
+    tags: [],
+    images: [],
   }
 
   const {
