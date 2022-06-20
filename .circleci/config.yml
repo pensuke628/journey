@@ -15,20 +15,17 @@ jobs:
           path: ~/journey
       - restore_cache:
           keys:
-            - gem-cache-v1-{{ checksum '~/Gemfile.lock' }}
+            - gem-cache-v1-{{ checksum "~/journey/backend/Gemfile.lock" }}
             - gem-cache-v1-
-          working_directory: ~/journey/backend
       - run:
           command: |
             gem install bundler
             bundle config set path 'vendor/bundle'
-            bundle install --jobs=4 --retry=3          
-          working_directory: ~/journey/backend
+            bundle install --jobs=4 --retry=3
       - save_cache:
-          key: gem-cache-v1-{{ checksum '~/Gemfile.lock' }}
+          key: gem-v1-{{ checksum "~/journey/backend/Gemfile.lock" }}
           paths:
-              - ~/repo/backend/vendor/bundle
-          working_directory: ~/journey/backend
+              - ~/journey/backend/vendor/bundle
 
   test_backend:
     docker:
@@ -48,20 +45,17 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - gem-cache-v1-{{ checksum '~/journey/backend/Gemfile.lock' }}
+            - gem-cache-v1-{{ checksum "~/journey/backend/Gemfile.lock" }}
             - gem-cache-v1-
-          working_directory: ~/journey/backend
       - run:
           command: |
             gem install bundler
             bundle config set path 'vendor/bundle'
-            bundle install --jobs=4 --retry=3          
-          working_directory: ~/journey/backend
+            bundle install --jobs=4 --retry=3
       - save_cache:
-          key: gem-cache-v1-{{ checksum '~/journey/backend/Gemfile.lock' }}
+          key: gem-v1-{{ checksum "~/journey/backend/Gemfile.lock" }}
           paths:
-              - ~/repo/backend/vendor/bundle
-          working_directory: ~/journey/backend
+              - ~/journey/backend/vendor/bundle
       # - ruby/install-deps
       - run:
           name: Wait for DB
