@@ -4,12 +4,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import ja from 'date-fns/locale/ja'
 
+// MUIのimport
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
 import Modal from '@mui/material/Modal';
 import Paper from '@mui/material/Paper';
 import Rating from '@mui/material/Rating';
@@ -23,41 +26,49 @@ import Tabs from '@mui/material/Tabs';
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography';
 
+// MUIIconsのimport
 import EditIcon from '@mui/icons-material/Edit';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 
+// componentのimport
 import UnbookmarkButton from 'components/utils/UnbookmarkButton';
 import BookmarkButton from 'components/utils/BookmarkButton';
+import ReviewSimple  from 'components/layouts/ReviewSimple'
+import ImageUpload from 'components/layouts/ImageUpload';
 
 // ReactHooksFormのimport
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { Notification, ReviewParams, ReviewData, Tag } from 'interfaces/index';
+// interfaceのimport
+import { Image, Notification, ReviewParams, ReviewData, Tag } from 'interfaces/index';
+
+// バリデーションルールのimport
 import { ReviewSchema } from 'schema/review';
+
+// apiを叩く関数のimport
 import { followerNotification } from 'lib/api/notification';
 import { createReview } from 'lib/api/review';
 import { uploadImage } from 'lib/api/image'
 
-import ReviewSimple  from 'components/layouts/ReviewSimple'
-import ImageUpload from 'components/layouts/ImageUpload';
-
 type Props = {
   id: number
   name: string
-  postal_code: string
+  postalCode: string
   prefectures: string
   municipalities: string
-  image: string
+  image: {
+    url: string
+  }
   profile: string
-  phone_number: string
+  phoneNumber: string
   email: string
-  related_website: string
+  relatedWebsite: string
   price: string
   period: string
-  check_in_time: string
-  check_out_time: string
+  checkInTime: string
+  checkOutTime: string
   capacity: string
   parking: string
   bath: string
@@ -68,6 +79,7 @@ type Props = {
   editHouse: () => void
   reviews: React.SetStateAction<ReviewData[]>
   tags: React.SetStateAction<Tag[]>
+  houseImages: React.SetStateAction<Image[]>
 }
 
 type TabPanelProps = {
@@ -122,15 +134,15 @@ const FlexBox = styled(Box) ({
   display: 'flex'
 });
 
-const UserTab = styled(Tab) ({
+const HouseTab = styled(Tab) ({
   minWidth: '60px'
 });
 
 function createData(
-  calories: string,
+  index: string,
   content: string
 ) {
-  return { calories, content };
+  return { index, content };
 }
 
 
@@ -149,9 +161,9 @@ const HouseDetail: React.FC<Props> = (props) => {
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [images, setImages] = useState<File[]>([]);
+  const [houseImages, setHouseImages] = useState<Image[]>([]);
   const [reviewFormOpen, setReviewFormOpen] = useState(false);
   const [tab, setTab] = useState(0);
-  // const [date, setDate] = useState<Date | null>(new Date());
 
   const tabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
@@ -163,17 +175,6 @@ const HouseDetail: React.FC<Props> = (props) => {
 
   const handleReviewClose = () => {
     setReviewFormOpen(false);
-  };
-
-  const handleUploadImages = async() => {
-    const formData = new FormData();
-    images.map((image) => {
-      formData.append('images[]', image);
-    })
-    
-    const test = await uploadImage(formData);
-
-
   };
 
   const onSubmit = async(data: ReviewParams) => {
@@ -190,19 +191,13 @@ const HouseDetail: React.FC<Props> = (props) => {
         // 繰り返し処理の箇所は後日修正する
         if (images.length >= 1 ) {
           formData.append('image', images[0]);
-          // console.log(images[0]);
-          const try1 = await uploadImage(formData);
-          // console.log(try1);
+          await uploadImage(formData);
           if (images.length >= 2 ) {
             formData.append('image', images[1]);
-            // console.log(images[1]);
-            const try2 = await uploadImage(formData);
-            // console.log(try2);
+            await uploadImage(formData);
             if (images.length >= 3) {
               formData.append('image', images[2]);
-              // console.log(images[2]);
-              const try3 = await uploadImage(formData);
-              // console.log(try3);
+              await uploadImage(formData);
             }
           }
         } 
@@ -236,19 +231,20 @@ const HouseDetail: React.FC<Props> = (props) => {
   useEffect(() => {
     setReviews(props.reviews);
     setTags(props.tags);
+    setHouseImages(props.houseImages);
   },[props.reviews]);
 
   const address: string = `${props.prefectures}`.concat(`${props.municipalities}`);
 
-  const datas = [
+  const houseDatas = [
     createData('場所', `${address}`),
-    createData('電話番号', `${props.phone_number}`),
+    createData('電話番号', `${props.phoneNumber}`),
     createData('Eメール', `${props.email}`),
-    createData('関連サイト', `${props.related_website}`),
+    createData('関連サイト', `${props.relatedWebsite}`),
     createData('料金', `${props.price}`),
     createData('期間', `${props.period}`),
-    createData('チェックイン時刻', `${props.check_in_time}`),
-    createData('チェックアウト時刻', `${props.check_out_time}`),
+    createData('チェックイン時刻', `${props.checkInTime}`),
+    createData('チェックアウト時刻', `${props.checkOutTime}`),
     createData('収容人数', `${props.capacity}`),
     createData('駐車場', `${props.parking}`),
     createData('風呂', `${props.bath}`),
@@ -256,10 +252,9 @@ const HouseDetail: React.FC<Props> = (props) => {
     createData('備考', `${props.note}`),
   ]
 
-
   return (
     <>
-      <Card>
+      <Card sx={{ mt: 2 }}>
         <Typography
           variant='h4'
         >
@@ -267,15 +262,15 @@ const HouseDetail: React.FC<Props> = (props) => {
         </Typography>
         <Box sx={{ display: 'flex' }}>
           <LocalOfferOutlinedIcon/>
-        {
-          tags?.map(tag => {
-            return (
-              <Typography key={tag.id}>
-                { tag.name }
-              </Typography>
-            )
-          })
-        }
+          {
+            tags?.map(tag => {
+              return (
+                <Typography key={tag.id}>
+                  { tag.name }
+                </Typography>
+              )
+            })
+          }
         </Box>
         <Grid
           container
@@ -285,45 +280,41 @@ const HouseDetail: React.FC<Props> = (props) => {
           <Grid item xs={12} sm={4}>
             <CardMedia
               component='img'
-              image={props.image}
+              image={props.image.url}
               alt='Image for house'
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <Box>
               <Typography>★★★☆☆</Typography>
-              <Typography>口コミ100件</Typography>
+              <Typography>口コミ {props.reviews.length}件</Typography>
             </Box>
           </Grid>
           <Grid item xs={6} sm={2}>
             <FlexBox sx={{ flexDirection: 'column' }}>
               <Button
-                // component={Link}
-                // to="/houses/new"
                 variant="contained"
                 startIcon={<PostAddIcon/>}
                 onClick={handleReviewOpen}
                 sx = {{ my:1 }}
-                >投稿</Button>
+              >
+                投稿
+              </Button>
               {
                 props.isBookmarked ? (
-                  <UnbookmarkButton
-                    onClick={props.bookmark}
-                  />
+                  <UnbookmarkButton onClick={props.bookmark}/>
                 ) : ( 
-                  <BookmarkButton
-                    onClick={props.bookmark}
-                  />
+                  <BookmarkButton onClick={props.bookmark}/>
                 )
               }
               <Button
-              // component={Link}
-              // to="/houses/new"
-              variant="contained"
-              startIcon={<EditIcon/>}
+                variant="contained"
+                startIcon={<EditIcon/>}
                 onClick={props.editHouse}
                 sx = {{ my:1 }}
-                >編集</Button>
+              >
+                編集
+              </Button>
             </FlexBox>
           </Grid>
         </Grid>
@@ -351,7 +342,7 @@ const HouseDetail: React.FC<Props> = (props) => {
                       fullWidth
                       multiline
                       rows={7}
-                      placeholder='口コミを入力してください(最大〇〇字)'
+                      placeholder='口コミを入力してください(最大10000字)'
                       error={"content" in errors}
                       helperText={errors.content?.message}
                     />
@@ -440,47 +431,68 @@ const HouseDetail: React.FC<Props> = (props) => {
           onChange={tabChange}
           variant='fullWidth'
         >
-          <UserTab label='基本情報'></UserTab>
-          <UserTab label='写真'></UserTab>
-          <UserTab label='口コミ'></UserTab>
-          <UserTab label='地図・アクセス'></UserTab>
+          <HouseTab label='基本情報'></HouseTab>
+          <HouseTab label='写真'></HouseTab>
+          <HouseTab label='口コミ'></HouseTab>
+          <HouseTab label='地図・アクセス'></HouseTab>
         </Tabs>
         <TabPanel value={tab} index={0}>
           <TableContainer component={Paper}>
             <Table aria-label="simple table">
               <TableBody>
-                {datas.map((data) => (
-                  <TableRow
-                    key={data.calories}
-                    sx={{
-                      '&:last-child td, &:last-child th': {
-                        border: '1'
-                      }
-                    }}
-                  >
-                    <TableCell
-                      component="th"
-                      scope="row"
+                {
+                  houseDatas.map((data) => (
+                    <TableRow
+                      key={data.index}
                       sx={{
-                        width: '25%',
-                        borderRight: '1px solid #eee'
+                        '&:last-child td, &:last-child th': {
+                          border: '1'
+                        }
                       }}
                     >
-                      {data.calories}
-                    </TableCell>
-                    <TableCell align="left" sx={{ width: '75%' }}>
-                      {data.content}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{
+                          width: '25%',
+                          borderRight: '1px solid #eee'
+                        }}
+                      >
+                        {data.index}
+                      </TableCell>
+                      <TableCell align="left" sx={{ width: '75%' }}>
+                        {data.content}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                }
               </TableBody>
             </Table>
           </TableContainer>
         </TabPanel>
-        <TabPanel value={tab} index={1}>tab2</TabPanel>
+        <TabPanel value={tab} index={1}>
+          {
+            houseImages.length > 0 ? (
+              <ImageList cols={3} rowHeight={164}>
+                {
+                  houseImages.map((image) => (
+                    <ImageListItem key={image.id}>
+                      <img
+                        src={image.image.url}
+                        alt={`あなたの画像`}
+                      />
+                    </ImageListItem>
+                  ))
+                }
+              </ImageList>
+            ) : (
+              <p>写真はまだありません</p>
+            )
+          }
+        </TabPanel>
         <TabPanel value={tab} index={2}>
           {
-            reviews ? (
+            reviews.length > 0 ? (
               reviews.map((review: ReviewData) => (
                 <Box key={review.id}>
                   <ReviewSimple
