@@ -9,10 +9,10 @@ jobs:
   build:
     docker:
       - image: cimg/ruby:3.0.2
-    working_directory: ~/repo
+    working_directory: ~/journey
     steps:
       - checkout:
-          path: ~/repo
+          path: ~/journey
       - ruby/install-deps
 
   test_backend:
