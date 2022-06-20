@@ -1,22 +1,28 @@
 import React, {useState, useEffect, useContext} from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 
+// MUIのimport
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+// MUIIconsのimport
 import SendIcon from '@mui/icons-material/Send';
 
-import { Message, Notification, UserData } from 'interfaces/index'
+// interfaceのimport
+import { Message, Notification, UserData } from 'interfaces/index';
+
+//  Contextのimport
+import { AuthContext } from 'App';
+
+// apiを叩く関数のimport
 import { getMessageRoom } from 'lib/api/message_rooms';
 import { createMessage } from 'lib/api/messages';
 import { createNotification } from 'lib/api/notification';
-
-import { AuthContext } from 'App';
 
 const styles = {
   box: {
@@ -40,7 +46,6 @@ const UserMessageRoom: React.FC = () => {
 
   const params = useParams<{ id: string }>();
   const id = Number(params.id);
-  // console.log(params.id);
 
   const handleGetMessageRoom = async() => {
     try {
@@ -113,28 +118,25 @@ const UserMessageRoom: React.FC = () => {
 
   return (
     <Container>
-      <h1>検索BOX</h1>
-      {/* <div style={{ maxWidth: 360 }}> */}
-      <div>
-        <Grid container justifyContent='center'>
-          <Grid item>
-            <Avatar
-              alt='avatar'
-              // src={otherUser?.avatar || ''}
-            />
-            <Typography
-              variant='body2'
-              component='p'
-              gutterBottom
-              sx={{
-                marginTop: '0.5rem',
-                marginBottom: '1rem',
-                textAlign: 'center'
-              }}
-            >
-              {otherUser?.name}
-            </Typography>
-          </Grid>
+      {/* <h1>検索BOX導入予定</h1> */}
+        <Grid container justifyContent='center' sx={{ mt: 2 }}>
+          <Avatar
+            alt='avatar'
+            src={otherUser?.avatar || ''}
+          />
+          <Typography
+            variant='h6'
+            component='div'
+            gutterBottom
+            sx={{
+              marginTop: '0.3rem',
+              marginBottom: '1rem',
+              marginLeft: '2rem',
+              textAlign: 'center'
+            }}
+          >
+            {otherUser?.name}
+          </Typography>
         </Grid>
         {
           messages?.map((message: Message, index: number) => {
@@ -181,21 +183,20 @@ const UserMessageRoom: React.FC = () => {
                   required
                   multiline
                   value={content}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContent(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setContent(e.target.value)
+                  }
                   // className={classes.textInputWrapper}
                 />
-                <Button
-                  variant="contained"
-                  color="primary"
+                <IconButton
+                  color='primary'
                   disabled={!content ? true : false}
                   onClick={handleSubmit}
-                  // className={classes.button}
                 >
                   <SendIcon />
-                </Button>
+                </IconButton>
               </form>
             </Grid>
-      </div>
     </Container>
   );
 }

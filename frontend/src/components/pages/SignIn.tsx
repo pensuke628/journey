@@ -1,23 +1,26 @@
 import React, {useState, useContext} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 // MUIのimport
 import { styled } from '@mui/material/styles';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Checkbox,
-  Container,
-  FormControlLabel,
-  TextField,
-  Typography,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Checkbox from '@mui/material/Checkbox';
+import Container from '@mui/material/Container';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+// MUIIconsのimport
 import EmailIcon from '@mui/icons-material/Email';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import GoogleIcon from '@mui/icons-material/Google';
 import LockIcon from '@mui/icons-material/Lock';
+import TwitterIcon from '@mui/icons-material/Twitter';
 
 // ReactHooksFormのimport
 import { useForm, Controller } from 'react-hook-form';
@@ -33,9 +36,10 @@ import { getLike } from 'lib/api/like';
 import { getNotifications } from 'lib/api/notification';
 import { getOwners } from 'lib/api/owner';
 
+
 const CustomCard = styled(Card)({
   flexGrow: 1,
-  margin: '2rem 1rem',
+  margin: '4rem 1rem',
   maxWidth: 400,
 });
 
@@ -55,7 +59,7 @@ const SignIn: React.FC = () => {
     control,
   } = useForm<SignInParams>();
 
-  const {setIsSignedIn, setCurrentUser} = useContext(AuthContext);
+  const { setIsSignedIn, setCurrentUser } = useContext(AuthContext);
   const { setBookmarkingHouses } = useContext(BookmarkContext);
   const { setLikingReviews } = useContext(LikeContext);
   const { setNotifications } = useContext(NotificationContext);
@@ -63,7 +67,6 @@ const SignIn: React.FC = () => {
   const [alertMessageOpen, setAlertMessageOpen] = useState<boolean>(false);
 
   const sessionCreate= async(data: SignInParams) => {
-    // console.log(data);
     try {
       const res = await signIn(data);
       if (res.status === 200) {
@@ -113,12 +116,6 @@ const SignIn: React.FC = () => {
               textAlign: 'center',
             }}
           >
-            <Typography
-              variant="h3"
-              sx = {{ mt:3 }}
-            >
-              ログイン画面
-            </Typography>
             <FlexBox
               sx= {{
                 flexWrap: 'wrap',
@@ -164,7 +161,14 @@ const SignIn: React.FC = () => {
                     }}
                   >
                     <FormControlLabel control={<Checkbox/>} label='ログイン状態を保持する' sx={{ mr: 'auto' }}/>
-                    <Typography/>パスワードを忘れた場合はこちら
+                    <Typography>パスワードを忘れた場合は
+                      <Typography
+                        component={RouterLink}
+                        to='/passwordreset'
+                      >
+                        こちら
+                      </Typography>
+                    </Typography>
                   </Box>
                   <Button
                     type='submit'
@@ -177,6 +181,60 @@ const SignIn: React.FC = () => {
               </CustomCard>
               <CustomCard>
                 <CustomCardHeader title='他サービスIDでログイン'/>
+                <CardContent>
+                  <Stack
+                   spacing={3}
+                   alignItems='center'
+                   justifyContent='center'
+                   m={3}
+                  >
+                    <Button
+                      variant='outlined'
+                      color='inherit'
+                      size='large'
+                      startIcon={
+                        <TwitterIcon
+                          sx={{
+                            color: '#1DA1F2'
+                          }}
+                        />
+                      }
+                      sx={{
+                        width: '60%'
+                      }}
+                    >
+                      Twitter
+                    </Button>
+                    <Button
+                      variant='outlined'
+                      color='inherit'
+                      size='large'             
+                      startIcon={
+                        <FacebookIcon
+                          sx={{
+                            color: '#1877F2'
+                          }}
+                        />
+                      }
+                      sx={{
+                        width: '60%'
+                      }}
+                    >
+                      Facebook
+                    </Button>
+                    <Button
+                      variant='outlined'
+                      color='inherit'
+                      size='large'
+                      startIcon={<GoogleIcon/>}
+                      sx={{
+                        width: '60%'
+                      }}
+                    >
+                      Google
+                    </Button>
+                  </Stack>
+                </CardContent>
               </CustomCard>
               <AlertMessage
                 // エラーが発生した場合はアラートを表示

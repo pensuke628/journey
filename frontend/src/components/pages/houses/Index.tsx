@@ -1,26 +1,28 @@
 import React, { useState, useEffect, useContext } from 'react';
-import axios from "axios";
-import { Link } from "react-router-dom";
-import {
-  Button,
-} from "@mui/material";
+import { Link as RouterLink } from 'react-router-dom';
 
-// コンポーネントのimport
-import House from "components/layouts/House";
+// MUIのimport
+import Button from '@mui/material/Button';
+
+// componentのimport
+import House from 'components/layouts/House';
 
 // interfaceのimport
-import { HouseData } from "interfaces/index";
+import { HouseData } from 'interfaces/index';
 
+//  Contextのimport
 import { BookmarkContext } from 'App';
+
+// apiを叩く関数のimport
 import { createBookmark ,destroyBookmark } from 'lib/api/bookmark';
+import { getHouses } from 'lib/api/house';
 
 const Index: React.FC = () => {
   const { bookmarkingHouses, setBookmarkingHouses } = useContext(BookmarkContext);
-  const url: string = "http://localhost:3010/api/v1/houses";
   const [houses, setHouses] = useState<HouseData[]>([]);
 
   const getData = async() => {
-    const res = await axios.get(url);
+    const res = await getHouses();
     if (res.status === 200) {
       setHouses(res.data);
     }
@@ -31,9 +33,8 @@ const Index: React.FC = () => {
       houseId: house.id
     }
 
-    const resCreate = await createBookmark(params);
-    console.log(resCreate);
-    if (resCreate.status === 200) {
+    const res = await createBookmark(params);
+    if (res.status === 200) {
       setBookmarkingHouses([...bookmarkingHouses, house]);
     }
   }
@@ -44,9 +45,8 @@ const Index: React.FC = () => {
     }
 
     try {
-        const resDestroy = await destroyBookmark(params);
-        console.log(resDestroy);
-        if (resDestroy.status === 200) {
+        const res = await destroyBookmark(params);
+        if (res.status === 200) {
           const newbookmarks = bookmarkingHouses.filter(data => data !== house)
           setBookmarkingHouses([...newbookmarks]);
         }
@@ -55,8 +55,8 @@ const Index: React.FC = () => {
     }
   }
 
-  useEffect( () => {
-    getData()
+  useEffect(() => {
+    getData();
   },[])
 
   return (
@@ -69,18 +69,20 @@ const Index: React.FC = () => {
             id={house.id}
             name={house.name}
             prefectures={house.prefectures}
-            image={house.image}
+            image={house.image.url}
             bookmark={() => handleCreateBookmark(house)}
             unbookmark={() => handleDestroyBookmark(house)}
           />
         );
       })}
       <Button
-        component={Link}
-        to="/houses/new"
-        variant="contained"
+        component={RouterLink}
+        to='/houses/new'
+        variant='contained'
         sx = {{ m:2 }}
-      >新規登録する</Button>
+      >
+        新規登録する
+      </Button>
     </>
   );
 }

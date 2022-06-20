@@ -30,22 +30,34 @@ export interface Follow {
   followerId: number | undefined
 }
 
+export interface Image {
+  id: number
+  image: {
+    url: string
+  }
+  reviewId: number
+  createdAt: Date
+  updatedAt: Date
+}
+
 // ハウス
 export interface HouseData {
   id: number
   name: string
-  postal_code: string
+  postalCode: string
   prefectures: string
   municipalities: string
-  image: string
+  image: {
+    url: string
+  }
   profile: string
-  phone_number: string
+  phoneNumber: string
   email: string
-  related_website: string
+  relatedWebsite: string
   price: string
   period: string
-  check_in_time: string
-  check_out_time: string
+  checkInTime: string
+  checkOutTime: string
   capacity: string
   parking: string
   bath: string
@@ -130,6 +142,7 @@ export interface ReviewData {
   updatedAt: Date
   comments: Comment[]
   tags: Tag[] | undefined
+  images: Image[]
 }
 
 // サインアップ
@@ -160,7 +173,7 @@ export interface UserData {
   email: string
   avatar: string
   profile: string
-  background_image: string
+  backgroundImage: string
   provider: string
   uid: string
   allowPasswordChange: boolean
@@ -168,4 +181,6 @@ export interface UserData {
   updatedAt?: Date
   reviews: ReviewData[]
   likes: ReviewData[]
+  following: UserData[]
+  followers: UserData[]
 }

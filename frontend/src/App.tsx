@@ -5,12 +5,14 @@ import React, {useState, useEffect, createContext} from 'react';
 import Routing from 'routes/index';
 
 // componentのimport
-import Header from 'components/layouts/Header';
+// import Header from 'components/layouts/Header';
+import ResponsiveDrawer from 'components/layouts/ResponsiveDrawer';
 import Footer from 'components/layouts/Footer';
 
 // interfacesのimport
 import { HouseData, Notification, ReviewData, UserData } from 'interfaces/index';
 
+// apiを叩く関数のimport
 import { getCurrentUser } from 'lib/api/auth';
 
 // グローバルで扱う変数・関数
@@ -44,8 +46,8 @@ export const OwnerContext = createContext({} as {
 })
 
 export const RelationshipContext = createContext({} as {
-  followingUsers: number[]
-  setFollowingUsers: React.Dispatch<React.SetStateAction<number[]>>
+  followingUsers: UserData[]
+  setFollowingUsers: React.Dispatch<React.SetStateAction<UserData[]>>
 })
 
 
@@ -53,7 +55,8 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<UserData | undefined>();
-  const [followingUsers, setFollowingUsers] = useState<number[]>([]);
+  const [followingUsers, setFollowingUsers] = useState<UserData[]>([]);
+  const [followerUsers, setFollowerUsers] = useState<UserData[]>([]);
   const [bookmarkingHouses, setBookmarkingHouses] = useState<HouseData[]>([]);
   const [likingReviews, setLikingReviews] = useState<ReviewData[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -70,6 +73,8 @@ const App: React.FC = () => {
         setIsSignedIn(true);
         setCurrentUser(res?.data.data);
         setBookmarkingHouses(res?.data.bookmarks);
+        setFollowingUsers(res?.data.following);
+        // setFollowerUsers(res?.data.follower);
         setLikingReviews(res?.data.likes);
         setNotifications(res?.data.notifications);
         setOwneredHouses(res?.data.owners);
@@ -97,9 +102,12 @@ const App: React.FC = () => {
       <LikeContext.Provider value={{ likingReviews, setLikingReviews }}>
       <NotificationContext.Provider value={{ notifications, setNotifications}}>
       <OwnerContext.Provider value={{ owneredHouses, setOwneredHouses }}>
-        <Header/>
-        <Routing/>
-        <Footer/>
+        
+        <ResponsiveDrawer>
+          {/* <Header/> */}
+          <Routing/>
+          <Footer/>
+        </ResponsiveDrawer>
       </OwnerContext.Provider>
       </NotificationContext.Provider>
       </LikeContext.Provider>
