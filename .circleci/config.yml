@@ -1,20 +1,11 @@
 version: 2.1
 
 orbs:
-  ruby: circleci/ruby@1.4.0
+  ruby: circleci/ruby@1.8.0
   aws-ecr: circleci/aws-ecr@8.1.2
   aws-ecs: circleci/aws-ecs@2.3.0
 
 jobs:
-  build:
-    docker:
-      - image: cimg/ruby:3.0.2
-    working_directory: ~/journey_backend
-    steps:
-      - checkout:
-          path: ~/journey_backend
-      - ruby/install-deps
-
   test_backend:
     docker:
       - image: cimg/ruby:3.0.2
@@ -28,38 +19,53 @@ jobs:
       BUNDLE_RETRY: "3"
       APP_DATABASE_HOST: "127.0.0.1"
       RAILS_ENV: test
-    working_directory: ~/repo
+    working_directory: ~/journey
     steps:
-      - checkout:
+      - checkout
+
+      # restore gem from cache
       - restore_cache:
           keys:
-            - gem-cache-v1-{{ checksum '~/repo/backend/Gemfile.lock' }}
+            - gem-cache-v1-{{ checksum "~/journey/backend/Gemfile.lock" }}
             - gem-cache-v1-
-          working_directory: ~/repo/backend
+          working_directory: ~/journey/backend
+
+      # gem install
       - run:
           command: |
             gem install bundler
             bundle config set path 'vendor/bundle'
-            bundle install --jobs=4 --retry=3          
-          working_directory: ~/repo/backend
+            bundle install --jobs=4 --retry=3
+          working_directory: ~/journey/backend
+      
+      # save cache
       - save_cache:
-        key: gem-cache-v1-{{ checksum '~/repo/backend/Gemfile.lock' }}
-        paths:
-            - ~/repo/backend/vendor/bundle
-        working_directory: ~/repo/backend
-      # - ruby/install-deps
-      - run:
-          name: Wait for DB
-          command: sleep 10
+          key: gem-v1-{{ checksum "~/journey/backend/Gemfile.lock" }}
+          paths:
+              - ~/journey/backend/vendor/bundle
+          working_directory: ~/journey/backend
+
+      # Database setup
       - run:
           name: Database setup
-          command: bundle exec rails db:create db:migrate
+          command: bundle exec rails db:create
+          working_directory: ~/journey/backend
+      - run:
+          name: Database setup
+          command: bundle exec rails db:migrate
+          working_directory: ~/journey/backend
+      
+      # run rubocop
       - run:
           name: rubocop
           command: bundle exec rubocop
+          working_directory: ~/journey/backend
+
+      # run Rspec
       - run:
           name: test
           command: bundle exec rspec
+          working_directory: ~/journey/backend
 
   build_and_push_image_frontend:
     machine:
@@ -91,10 +97,7 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
-      - test_backend:
-          requires:
-            - build
+      - test_backend
       - build_and_push_image_frontend:
           requires:
             - test_backend
