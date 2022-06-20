@@ -11,7 +11,7 @@ jobs:
       - image: cimg/ruby:3.0.2
     working_directory: ~/journey
     steps:
-      - checkout:
+      - checkout
       - restore_cache:
           keys:
             - gem-cache-v1-{{ checksum "~/journey/backend/Gemfile.lock" }}
