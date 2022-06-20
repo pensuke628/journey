@@ -1,4 +1,5 @@
 class House < ApplicationRecord
+  mount_uploader :image, ImageUploader
   # validation
   validates :name, :prefectures, presence: true
   validates :postal_code, length: { is: 7 }, allow_blank: true

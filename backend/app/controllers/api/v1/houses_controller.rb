@@ -19,7 +19,7 @@ class Api::V1::HousesController < ApplicationController
   end
 
   def show
-    render json: @house, each_serializer: HouseSerializer, include: [{ reviews: [:tags] }, :tags]
+    render json: @house, each_serializer: HouseSerializer, include: [{ reviews: %i[tags images] }, :tags]
   end
 
   def update
