@@ -44,19 +44,28 @@ jobs:
           paths:
               - ~/journey/backend/vendor/bundle
           working_directory: ~/journey/backend
-      # - ruby/install-deps
-      - run:
-          name: Wait for DB
-          command: sleep 10
+
+      # Database setup
       - run:
           name: Database setup
-          command: bundle exec rails db:create db:migrate
+          command: bundle exec rails db:create
+          working_directory: ~/journey/backend
+      - run:
+          name: Database setup
+          command: bundle exec rails db:migrate
+          working_directory: ~/journey/backend
+      
+      # run rubocop
       - run:
           name: rubocop
           command: bundle exec rubocop
+          working_directory: ~/journey/backend
+
+      # run Rspec
       - run:
           name: test
           command: bundle exec rspec
+          working_directory: ~/journey/backend
 
   build_and_push_image_frontend:
     machine:
