@@ -1,5 +1,5 @@
-import React, {useState, useContext} from 'react';
-import { Link as RouterLink, useNavigate} from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 // MUIのimport
@@ -7,49 +7,99 @@ import AppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+
 // MUIIconsのimport
-import MenuIcon from '@mui/icons-material/Menu';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MailIcon from '@mui/icons-material/Mail';
+import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/NotificationsOutlined';
 import PersonIcon from '@mui/icons-material/Person';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import SettingsIcon from '@mui/icons-material/Settings';
 
+// interfaceのimport
 import { Notification } from 'interfaces/index';
 
-import { signOut } from 'lib/api/auth';
-
+//  Contextのimport
 import { AuthContext, NotificationContext } from 'App';
 
-const pages = ['Products', 'Pricing', 'Blog'];
+// apiを叩く関数のimport
+import { signOut } from 'lib/api/auth';
 
-const Header: React.FC = () => {
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+const drawerWidth = 240;
 
+interface Props {
+  children: React.ReactNode;
+}
+
+const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
+  // const { window } = props;
+  const navigate = useNavigate();
   const { loading, isSignedIn, setIsSignedIn, currentUser } = useContext(AuthContext);
   const { notifications, setNotifications } = useContext(NotificationContext);
-  const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
+  const [bottomMenuValue, setBottomMenuValue] = useState<number>(0);
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
   };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
   // 未読の通知の数をカウントする
   const noCheckNotificationCount: number = notifications.filter((notification) => !notification.checked).length
+
+  const drawer = (
+    <div>
+      <Toolbar />
+      <Divider />
+      <List>
+        <ListItem disablePadding>
+          <ListItemButton
+            component={RouterLink}
+            to='/about'
+            onClick={handleDrawerToggle}
+          >
+            <ListItemIcon>
+              <QuestionMarkIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Journeyとは'}/>
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            component={RouterLink}
+            to='/'
+          >
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary={'トップページ'}/>
+          </ListItemButton>
+        </ListItem>
+      </List>
+    </div>
+  );
+
+  // const container = window !== undefined ? () => window().document.body : undefined;
+  // const year: number = new Date().getFullYear();
 
   const AuthMenu:React.FC = () => {
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -267,7 +317,7 @@ const Header: React.FC = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Box
               sx = {{
-                display:  { xs: 'none', md: 'flex' },
+                display:  { xs: 'none', sm: 'flex' },
                 alignItems: 'center',
                 textAlign: 'center',
               }}
@@ -289,7 +339,7 @@ const Header: React.FC = () => {
             </Box>
             <Box
               sx = {{
-                display: { xs: 'flex', md: 'none' }
+                display: { xs: 'flex', sm: 'none' }
               }}
             >
               <Tooltip title="ログインメニュー">
@@ -342,80 +392,115 @@ const Header: React.FC = () => {
     };
   };
 
-  return(
-    <AppBar position="static">
-      <Container>
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        sx={{
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
+        }}
+      >
         <Toolbar>
+          <IconButton
+            color='inherit'
+            aria-label='open drawer'
+            edge='start'
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
           <Link
             component={RouterLink}
             to='/'
             color='inherit'
             underline='none'
-            sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
+            sx={{
+              flexGrow: 1
+            }}
           >
             Journey
           </Link>
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <Link
-            component={RouterLink}
-            to='/'
-            color='inherit'
-            underline='none'
-            sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
-          >
-            Journey
-          </Link>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
           <AuthMenu/>
         </Toolbar>
-      </Container>
-    </AppBar>
+      </AppBar>
+      <Box
+        component='nav'
+        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        aria-label='mailbox folders'
+      >
+        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+        <Drawer
+          // container={container}
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+          sx={{
+            display: { xs: 'block', sm: 'none' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          }}
+        >
+          {drawer}
+        </Drawer>
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          }}
+          open
+        >
+          {drawer}
+        </Drawer>
+      </Box>
+      <Box
+        sx={{
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          mt: '70px',
+          mx: 'auto'
+        }}
+        
+      >
+        {children}
+      </Box>
+      <Paper
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+        }}
+        elevation={3}
+      >
+        <BottomNavigation
+          showLabels
+          value={bottomMenuValue}
+          onChange={(event, newValue) => {
+            setBottomMenuValue(newValue);
+          }}
+        >
+          <BottomNavigationAction
+            component={RouterLink}
+            to='/'
+            label='TOP'
+            icon={<HomeIcon />}
+          />
+          <BottomNavigationAction
+            component={RouterLink}
+            to='about'
+            label='Journeyとは'
+            icon={<QuestionMarkIcon />}
+          />
+        </BottomNavigation>
+      </Paper>
+    </Box>
   );
-};
+}
 
-export default Header;
+export default ResponsiveDrawer
