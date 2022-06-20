@@ -9,4 +9,6 @@ class UserSerializer < ActiveModel::Serializer
              :uid
 
   has_many :reviews
+  has_many :following
+  has_many :followers
 end

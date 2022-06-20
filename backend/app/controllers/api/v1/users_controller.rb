@@ -7,7 +7,7 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def show
-    render json: @user, each_serializer: UserSerializer, include: [:reviews]
+    render json: @user, each_serializer: UserSerializer, include: %i[reviews following followers]
   end
 
   private

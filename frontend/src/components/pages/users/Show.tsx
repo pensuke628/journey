@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 
+// MUIのimport
 import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -13,18 +14,32 @@ import Grid from '@mui/material/Grid';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography';
+
+// MUIIconsのimport
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import EditIcon from '@mui/icons-material/Edit';
 import HouseIcon from '@mui/icons-material/House';
 import MailIcon from '@mui/icons-material/Mail';
 
-// import { AuthContext } from 'App';
-
-import { UserData, ReviewData } from 'interfaces/index'
-
-import {getUser} from 'lib/api/user';
-
+// componentのimport
 import ReviewSimple  from 'components/layouts/ReviewSimple'
+import User from 'components/layouts/User';
+import FollowButton from 'components/utils/FollowButton';
+import UnfollowButton from 'components/utils/UnfollowButton';
+
+// interfaceのimport
+import { Follow, Notification, UserData, ReviewData } from 'interfaces/index';
+
+//  Contextのimport
+import { AuthContext, RelationshipContext } from 'App';
+
+// apiを叩く関数のimport
+import { getUser } from 'lib/api/user';
+import { createNotification } from 'lib/api/notification';
+import { follow, unfollow } from 'lib/api/relationships';
+
+// default画像のimport
+import defaultBckgroundImage from 'defaultBackgroundImage.png';
 
 type TabPanelProps = {
   children?: React.ReactNode;
@@ -71,15 +86,18 @@ const UserShow: React.FC = () => {
     email: '',
     avatar: '',
     profile: '',
-    background_image: '',
+    backgroundImage: '',
     provider: '',
     uid: '',
     allowPasswordChange: true,
     reviews: [],
-    likes: []
+    likes: [],
+    following: [],
+    followers: [],
   }
 
-  // const { isSignedIn, setIsSignedIn, currentUser, setCurrentUser } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
+  const { followingUsers, setFollowingUsers } = useContext(RelationshipContext);
   const query = useParams<{ id: string }>();
 
   const [user, setUser] = useState<UserData>(DummyUser);
@@ -100,7 +118,62 @@ const UserShow: React.FC = () => {
 
   useEffect(() => {
     getData();
-  },[]);
+  },[query]);
+
+  // ユーザーをフォローする
+  const userFollow = async() => {
+    const params: Follow = {
+      followerId: currentUser?.id,
+      followedId: user.id
+    }
+
+    const notificationParams: Notification = {
+      senderId: currentUser?.id,
+      receiverId: user.id,
+      reviewId: undefined,
+      commentId: undefined,
+      messageId: undefined,
+      act: 'follow',
+      checked: undefined,
+      createdAt: undefined,
+      updatedAt: undefined
+    }
+
+    try {
+      const res = await follow(params);
+      // console.log(res);
+      if (res.status === 200) {
+        setFollowingUsers([user, ...followingUsers]);
+        console.log('ユーザーをフォローしました');
+        const notification = await createNotification(notificationParams);
+        if (notification.status === 200) {
+          console.log('フォロー通知を作成しました');
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
+  // ユーザーのフォローを解除する
+  const userUnfollow = async() => {
+    const params: Follow = {
+      followerId: currentUser?.id,
+      followedId: user.id
+    }
+
+    try {
+      const res = await unfollow(params);
+      // console.log(res);
+      if (res.status === 200) {
+        const newfollowing = followingUsers.filter(followinguser => followinguser.id !== user.id);
+        setFollowingUsers([...newfollowing]);
+        console.log('ユーザーのフォローを解除しました');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const tabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
@@ -111,12 +184,14 @@ const UserShow: React.FC = () => {
       { userIsTrue && user ? (
         <Box>
           <Container>
-            <h1>ユーザーマイページ</h1>
             <Card>
               <CardMedia
                 component='img'
-                image='public/logo192.png'
+                image={
+                  user.backgroundImage ? user.backgroundImage : defaultBckgroundImage
+                }
                 alt='背景画像を表示する予定です'
+                height='150'
               />
               <CardContent>
                 <Grid
@@ -144,38 +219,69 @@ const UserShow: React.FC = () => {
                     </Box>
                   </Grid>
                   <Grid item xs={8} sm={3}>
-                    <FlexBox sx={{ flexDirection: 'column' }}>
-                      <Button
-                        component={RouterLink}
-                        to={`/users/${user.id}/bookmarks`}
-                        key='one'
-                        variant="contained"
-                        startIcon={<BookmarksIcon />}
-                        style={styles.actionbutton}
-                      >お気に入り</Button>
-                      <Button
-                        component={RouterLink}
-                        to={`/users/${user.id}/message_rooms`}
-                        key='two'
-                        variant="contained"
-                        startIcon={<MailIcon />}
-                        style={styles.actionbutton}
-                      >メッセージ一覧</Button>
-                      <Button
-                        component={RouterLink}
-                        to={`/users/${user.id}/owners`}
-                        key='three'
-                        variant="contained"
-                        startIcon={<HouseIcon />}
-                        style={styles.actionbutton}
-                      >管理施設一覧</Button>
-                      <Button
-                        key='four'
-                        variant="contained"
-                        startIcon={<EditIcon />}
-                        style={styles.actionbutton}
-                      >プロフィール編集</Button>
-                    </FlexBox>
+                      {
+                        user.id === currentUser?.id ? (
+                          <FlexBox sx={{ flexDirection: 'column' }}>
+                            <Button
+                              component={RouterLink}
+                              to={`/users/${user.id}/bookmarks`}
+                              key='one'
+                              variant="contained"
+                              startIcon={<BookmarksIcon />}
+                              style={styles.actionbutton}
+                            >
+                              お気に入り
+                            </Button>
+                            <Button
+                              component={RouterLink}
+                              to={`/users/${user.id}/message_rooms`}
+                              key='two'
+                              variant="contained"
+                              startIcon={<MailIcon />}
+                              style={styles.actionbutton}
+                            >
+                              メッセージ一覧
+                            </Button>
+                            <Button
+                              component={RouterLink}
+                              to={`/users/${user.id}/owners`}
+                              key='three'
+                              variant="contained"
+                              startIcon={<HouseIcon />}
+                              style={styles.actionbutton}
+                            >
+                              管理施設一覧
+                            </Button>
+                            <Button
+                              key='four'
+                              variant="contained"
+                              startIcon={<EditIcon />}
+                              style={styles.actionbutton}
+                            >
+                              プロフィール編集
+                            </Button>
+                          </FlexBox>
+                          ) : (
+                            <FlexBox sx={{ flexDirection: 'column' }}>
+                              {
+                                followingUsers.some(followinguser => followinguser.id === user.id) ? (
+                                  <UnfollowButton onClick={userUnfollow}/>
+                                ) : (
+                                  <FollowButton onClick={userFollow}/>
+                                )
+                              }
+                              {/* <Button
+                                component={RouterLink}
+                                to={`/users/${currentUser?.id}/message_rooms`}
+                                variant="contained"
+                                startIcon={<MailIcon />}
+                                style={styles.actionbutton}
+                              >
+                                メッセージを送る
+                              </Button> */}
+                            </FlexBox>
+                          )
+                        }
                   </Grid>
                 </Grid>
                 <Tabs
@@ -187,13 +293,12 @@ const UserShow: React.FC = () => {
                   }}
                 >
                   <UserTab label='口コミ'></UserTab>
-                  <UserTab label='いいね'></UserTab>
                   <UserTab label='フォロー中'></UserTab>
                   <UserTab label='フォロワー'></UserTab>
                 </Tabs>
                 <TabPanel value={tab} index={0}>
                   {
-                    user.reviews ? (
+                    user.reviews.length > 0 ? (
                       user.reviews.map((review: ReviewData) => (
                         <Box key={review.id}>
                           <ReviewSimple
@@ -211,10 +316,80 @@ const UserShow: React.FC = () => {
                     )
                   }
                 </TabPanel>
-                <TabPanel value={tab} index={1}>tab2</TabPanel>
-                <TabPanel value={tab} index={2}>
+                <TabPanel value={tab} index={1}>
+                  {
+                    user.following.length > 0 ? (
+                      <Grid
+                        container
+                        spacing={2}
+                        sx={{
+                          mt: 1
+                        }}
+                      >
+                        {
+                          user.following.map((user: UserData) => (
+                            <Grid item xs={12} sm={4} key={user.id}>
+                              <User
+                                id={user.id}
+                                name={user.name}
+                                email={user.email}
+                                backgroundImage={user.backgroundImage}
+                                profile={user.profile}
+                                avatar={user.avatar}
+                                provider={user.provider}
+                                uid={user.uid}
+                                allowPasswordChange={user.allowPasswordChange}
+                                reviews={user.reviews}
+                                likes={user.likes}
+                                following={user.following}
+                                followers={user.following}
+                              />
+                            </Grid>
+                          ))
+                        }
+                      </Grid> 
+                    ) : (
+                      <p>フォローしているユーザーはいません</p>
+                    )
+                  }
                 </TabPanel>
-                <TabPanel value={tab} index={3}>tab4</TabPanel>
+                <TabPanel value={tab} index={2}>
+                {
+                    user.followers.length > 0 ? (
+                      <Grid
+                        container
+                        spacing={2}
+                        sx={{
+                          mt: 1
+                        }}
+                      >
+                        {
+                          user.followers.map((user: UserData) => (
+                            <Grid item xs={12} sm={4} key={user.id}>
+                              <User
+                                id={user.id}
+                                name={user.name}
+                                email={user.email}
+                                backgroundImage={user.backgroundImage}
+                                profile={user.profile}
+                                avatar={user.avatar}
+                                provider={user.provider}
+                                uid={user.uid}
+                                allowPasswordChange={user.allowPasswordChange}
+                                reviews={user.reviews}
+                                likes={user.likes}
+                                following={user.following}
+                                followers={user.following}
+                              />
+                            </Grid>
+                          ))
+                        }
+                      </Grid> 
+                    ) : (
+                      <p>フォロワーはいません</p>
+                    )
+                  }
+                </TabPanel>
               </CardContent>
             </Card>
           </Container>

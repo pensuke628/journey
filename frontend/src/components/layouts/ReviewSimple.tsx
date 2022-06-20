@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
+// MUIのimport
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -11,14 +12,20 @@ import IconButton from '@mui/material/IconButton';
 import Rating from '@mui/material/Rating';
 import Typography  from '@mui/material/Typography';
 
+// MUIIconsのimport
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import MessageIcon from '@mui/icons-material/Message';
 
+// interfaceのimport
+import { Notification, ReviewData, Tag } from 'interfaces/index';
+
+//  Contextのimport
+import { AuthContext, LikeContext } from 'App';
+
+// apiを叩く関数のimport
 import { like, unlike } from 'lib/api/like';
 import { createNotification } from 'lib/api/notification';
-import { AuthContext, LikeContext } from 'App';
-import { Notification, ReviewData, Tag } from 'interfaces/index';
 
 type Props = {
   id: number
@@ -101,7 +108,14 @@ const ReviewSimple: React.FC<Props> = (props) => {
   }
 
   return (
-    <Card>
+    <Card
+      sx={{
+        maxWidth: '600px',
+        border: '1px solid #ccc',
+        mx: 'auto',
+        my: 2,
+      }}
+    >
       <CardHeader
         avatar={
           <Avatar>
@@ -122,7 +136,7 @@ const ReviewSimple: React.FC<Props> = (props) => {
             readOnly
           />
           <Typography
-            component={Link}
+            component={RouterLink}
             to={`/reviews/${props.id}`}
           >
             {props.content}

@@ -3,6 +3,8 @@ class Review < ApplicationRecord
   validates :content, presence: true, length: { maximum: 10_000 }
   validates :date, presence: true
   validates :user_id, :house_id, presence: true
+  # scope
+  scope :order_new, -> { order(created_at: :desc) }
   # association
   belongs_to :user
   belongs_to :house
