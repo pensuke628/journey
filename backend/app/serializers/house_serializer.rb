@@ -19,6 +19,8 @@ class HouseSerializer < ActiveModel::Serializer
              :shopping,
              :note
 
-  has_many :reviews, serializer: ReviewSerializer
+  has_many :reviews, serializer: ReviewSerializer do
+    object.reviews.order_new
+  end
   has_many :tags
 end
