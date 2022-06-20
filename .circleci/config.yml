@@ -15,7 +15,7 @@ jobs:
           path: ~/journey_backend
       - ruby/install-deps
 
-  test:
+  test_backend:
     docker:
       - image: cimg/ruby:3.0.2
       - image: cimg/mysql:8.0.27
@@ -28,11 +28,26 @@ jobs:
       BUNDLE_RETRY: "3"
       APP_DATABASE_HOST: "127.0.0.1"
       RAILS_ENV: test
-    working_directory: ~/journey_backend
+    working_directory: ~/repo
     steps:
       - checkout:
-          path: ~/journey_backend
-      - ruby/install-deps
+      - restore_cache:
+          keys:
+            - gem-cache-v1-{{ checksum '~/repo/backend/Gemfile.lock' }}
+            - gem-cache-v1-
+          working_directory: ~/repo/backend
+      - run:
+          command: |
+            gem install bundler
+            bundle config set path 'vendor/bundle'
+            bundle install --jobs=4 --retry=3          
+          working_directory: ~/repo/backend
+      - save_cache:
+        key: gem-cache-v1-{{ checksum '~/repo/backend/Gemfile.lock' }}
+        paths:
+            - ~/repo/backend/vendor/bundle
+        working_directory: ~/repo/backend
+      # - ruby/install-deps
       - run:
           name: Wait for DB
           command: sleep 10
@@ -46,7 +61,19 @@ jobs:
           name: test
           command: bundle exec rspec
 
-  build_and_push_image:
+  build_and_push_image_frontend:
+    machine:
+      image: ubuntu-2004:202107-02
+    steps:
+      - checkout
+      - aws-ecr/build-and-push-image:
+          tag: "${CIRCLE_SHA1}"
+          region: ${AWS_REGION}
+          registry-id: AWS_ECR_REGISTRY_ID
+          repo: 'journey_frontnd_repo'
+          path: ./frontend/
+
+  build_and_push_image_backend:
     machine:
       image: ubuntu-2004:202107-02
     steps:
@@ -56,6 +83,7 @@ jobs:
           region: ${AWS_REGION}
           registry-id: AWS_ECR_REGISTRY_ID
           repo: 'journey_backend_repo'
+          path: ./backend/
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -64,18 +92,36 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - test:
+      - test_backend:
           requires:
             - build
-      - build_and_push_image:
+      - build_and_push_image_frontend:
           requires:
-            - test
+            - test_backend
+          filters:
+            branches:
+              only: main
+      - build_and_push_image_backend:
+          requires:
+            - test_backend
           filters:
             branches:
               only: main
       - aws-ecs/deploy-service-update:
           requires:
-            - build_and_push_image
+            - build_and_push_image_frontend
+            - build_and_push_image_backend
+          filters:
+            branches:
+              only: main
+          cluster-name: 'journey-cluster'
+          container-image-name-updates: 'container=journey-container-frontend,tag=${CIRCLE_SHA1}'
+          family: 'journey-task-frontend'
+          service-name: 'journey-service-frontend'
+      - aws-ecs/deploy-service-update:
+          requires:
+            - build_and_push_image_frontend
+            - build_and_push_image_backend
           filters:
             branches:
               only: main
