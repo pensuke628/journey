@@ -12,7 +12,6 @@ jobs:
     working_directory: ~/journey
     steps:
       - checkout:
-          path: ~/journey
       - restore_cache:
           keys:
             - gem-cache-v1-{{ checksum "~/journey/backend/Gemfile.lock" }}
