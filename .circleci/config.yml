@@ -51,7 +51,7 @@ jobs:
           command: bundle exec rails db:create
           working_directory: ~/journey/backend
       - run:
-          name: Database setup
+          name: Database migrate
           command: bundle exec rails db:migrate
           working_directory: ~/journey/backend
       
@@ -76,7 +76,7 @@ jobs:
           tag: "${CIRCLE_SHA1}"
           region: ${AWS_REGION}
           registry-id: AWS_ECR_REGISTRY_ID
-          repo: 'journey_frontnd_repo'
+          repo: 'journey_frontend_repo'
           path: ./frontend/
 
   build_and_push_image_backend:
