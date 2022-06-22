@@ -34,6 +34,8 @@ gem 'mini_magick'
 
 # シリアライズのためのgem
 gem 'active_model_serializers'
+# 住所から緯度と経度を取得するためのgem
+gem 'geocoder'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

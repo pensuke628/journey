@@ -4,6 +4,8 @@ class HouseSerializer < ActiveModel::Serializer
              :postal_code,
              :prefectures,
              :municipalities,
+             :latitude,
+             :longitude,
              :image,
              :profile,
              :phone_number,

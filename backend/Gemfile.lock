@@ -105,6 +105,7 @@ GEM
       factory_bot (~> 6.2.0)
       railties (>= 5.0.0)
     ffi (1.15.5)
+    geocoder (1.8.0)
     globalid (1.0.0)
       activesupport (>= 5.0)
     i18n (1.10.0)
@@ -253,6 +254,7 @@ DEPENDENCIES
   devise-i18n
   devise_token_auth
   factory_bot_rails
+  geocoder
   listen (~> 3.3)
   mini_magick
   mysql2 (~> 0.5)

@@ -36,6 +36,7 @@ import UnbookmarkButton from 'components/utils/UnbookmarkButton';
 import BookmarkButton from 'components/utils/BookmarkButton';
 import ReviewSimple  from 'components/layouts/ReviewSimple'
 import ImageUpload from 'components/layouts/ImageUpload';
+import GoogleMapComponent from 'components/layouts/GoogleMapComponent';
 
 // ReactHooksFormのimport
 import { useForm, Controller } from "react-hook-form";
@@ -58,6 +59,8 @@ type Props = {
   postalCode: string
   prefectures: string
   municipalities: string
+  latitude: number | undefined
+  longitude: number | undefined
   image: {
     url: string
   }
@@ -510,7 +513,12 @@ const HouseDetail: React.FC<Props> = (props) => {
             )
           }
         </TabPanel>
-        <TabPanel value={tab} index={3}>tab4</TabPanel>
+        <TabPanel value={tab} index={3}>
+          <GoogleMapComponent
+            latitude={props.latitude}
+            longitude={props.longitude}
+          />
+        </TabPanel>
       </Card>
     </>
   )
