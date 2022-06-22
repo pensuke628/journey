@@ -27,6 +27,8 @@ const HouseShow: React.FC = () => {
     postalCode: "",
     prefectures: "",
     municipalities: "",
+    latitude: undefined,
+    longitude: undefined,
     image: {
       url: ""
     },
@@ -157,6 +159,8 @@ const HouseShow: React.FC = () => {
           postalCode={house.postalCode}
           prefectures={house.prefectures}
           municipalities={house.municipalities}
+          latitude={house.latitude}
+          longitude={house.longitude}
           image={house.image}
           profile={house.profile}
           phoneNumber={house.phoneNumber}

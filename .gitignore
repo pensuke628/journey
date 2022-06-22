@@ -58,3 +58,6 @@
 
 # ---nginx---
 /nginx
+
+# environment values
+/.env
