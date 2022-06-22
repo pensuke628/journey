@@ -47,6 +47,8 @@ export interface HouseData {
   postalCode: string
   prefectures: string
   municipalities: string
+  latitude: number | undefined
+  longitude: number | undefined
   image: {
     url: string
   }
