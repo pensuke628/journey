@@ -31,8 +31,8 @@ gem 'devise_token_auth'
 # ソーシャルログインのためのgem
 gem 'omniauth'
 gem 'omniauth-facebook'
-gem 'omniauth-twitter'
 gem 'omniauth-rails_csrf_protection'
+gem 'omniauth-twitter'
 # ファイルアップロード機能として、carrierwaveを使う
 gem 'carrierwave'
 gem 'mini_magick'
