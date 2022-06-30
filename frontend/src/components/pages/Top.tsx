@@ -74,7 +74,6 @@ const Top: React.FC = () => {
   const handlePrefectureSearch = async(event:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const prefecture = event.currentTarget.value;
 
-    // 検索BOXが空欄の場合、初期化する
     if (prefecture === '') {
       setFilteredHouses(houses);
       setIsSearching(false);
@@ -233,29 +232,6 @@ const Top: React.FC = () => {
               >
                 <JapanMapComponent
                   handleClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handlePrefectureSearch(event)}
-                />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader
-                title='条件から探す'
-              />
-              <CardContent>
-                <TextField
-                  color='secondary'
-                  variant='outlined'
-                  placeholder='都道府県を入力してください'
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <IconButton
-                        onClick={handlePrefectureSearch}
-                      >
-                        <SearchIcon/>
-                      </IconButton>
-                    ),
-                  }}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>)=> setKeyword(event.target.value)}
                 />
               </CardContent>
             </Card>
