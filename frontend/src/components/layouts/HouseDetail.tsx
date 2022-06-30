@@ -239,6 +239,10 @@ const HouseDetail: React.FC<Props> = (props) => {
     navigate('/houses', { state: keyword });
   };
 
+  const DummyFuction = () => {
+    console.log('');
+  }
+
   useEffect(() => {
     setReviews(props.reviews);
     setTags(props.tags);
@@ -517,6 +521,7 @@ const HouseDetail: React.FC<Props> = (props) => {
                     userId={review.userId}
                     evaluation={review.evaluation}
                     tags={review.tags}
+                    setState={DummyFuction}
                   />
                 </Box>
               ))

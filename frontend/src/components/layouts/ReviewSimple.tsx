@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 
 // MUIのimport
 import Avatar from '@mui/material/Avatar';
@@ -16,6 +16,8 @@ import Typography  from '@mui/material/Typography';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import MessageIcon from '@mui/icons-material/Message';
+
+import CustomTag from 'components/utils/Tag';
 
 // interfaceのimport
 import { Notification, ReviewData, Tag } from 'interfaces/index';
@@ -34,9 +36,13 @@ type Props = {
   evaluation: number | null
   userId: number
   tags: Tag[] | undefined
+  setState: Function
 }
 
 const ReviewSimple: React.FC<Props> = (props) => {
+
+  const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser } = useContext(AuthContext);
   const {likingReviews, setLikingReviews} = useContext(LikeContext);
 
@@ -107,6 +113,16 @@ const ReviewSimple: React.FC<Props> = (props) => {
     }
   }
 
+  const handleTagSearch = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const keyword = event.currentTarget.value;
+    if (location.pathname === '/reviews/search') {
+      // 検索結果画面から再度検索するため、stateを更新する関数を実行する
+      props.setState(keyword);
+    } else {
+      navigate('/reviews/search', { state: keyword });
+    }
+  };
+
   return (
     <Card
       sx={{
@@ -145,9 +161,13 @@ const ReviewSimple: React.FC<Props> = (props) => {
           {
             props.tags?.map((tag) => {
               return (
-                <Typography key={tag.id}>
-                  #{ tag.name }
-                </Typography>
+                <CustomTag
+                  key={tag.id}
+                  text={tag.name}
+                  onClick={(event)=> {
+                    handleTagSearch(event);
+                  }}
+                />
               )
             })
           }
