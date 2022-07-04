@@ -2,11 +2,19 @@ class Api::V1::TagsController < ApplicationController
   before_action :set_tag
 
   def searchhouses
-    render json: @tag.tagging_houses
+    if @tag
+      render json: @tag.tagging_houses
+    else
+      response_internal_server_error
+    end
   end
 
   def searchreviews
-    render json: @tag.tagging_reviews
+    if @tag
+      render json: @tag.tagging_reviews
+    else
+      response_internal_server_error
+    end
   end
 
   private
