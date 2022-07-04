@@ -36,6 +36,7 @@ gem 'omniauth-twitter'
 # ファイルアップロード機能として、carrierwaveを使う
 gem 'carrierwave'
 gem 'mini_magick'
+gem 'fog-aws'
 
 # シリアライズのためのgem
 gem 'active_model_serializers'
