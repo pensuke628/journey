@@ -19,6 +19,7 @@ import MessageRoom  from 'components/pages/users/MessageRoom';
 import OwnerIndex from 'components/pages/owners/Index';
 import OwnerNew from 'components/pages/owners/New';
 import ReviewShow from 'components/pages/reviews/Show';
+import ReviewSearch from 'components/pages/reviews/Search';
 
 import ActionCableConnection from 'components/layouts/ActionCableConnection';
 
@@ -65,6 +66,7 @@ const Routing: React.FC = () => {
           <Route index element={<OwnerNew/>}/>
         </Route>
         <Route path='reviews'>
+          <Route path='search' element={<ReviewSearch/>}/>
           <Route path=':id'>
             <Route index element={<ReviewShow/>}/>
           </Route>

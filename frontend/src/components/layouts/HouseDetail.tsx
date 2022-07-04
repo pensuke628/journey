@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -23,7 +24,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 import Tabs from '@mui/material/Tabs';
-import TextField from '@mui/material/TextField'
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 // MUIIconsのimport
@@ -36,6 +37,8 @@ import UnbookmarkButton from 'components/utils/UnbookmarkButton';
 import BookmarkButton from 'components/utils/BookmarkButton';
 import ReviewSimple  from 'components/layouts/ReviewSimple'
 import ImageUpload from 'components/layouts/ImageUpload';
+import GoogleMapComponent from 'components/layouts/GoogleMapComponent';
+import CustomTag from 'components/utils/Tag';
 
 // ReactHooksFormのimport
 import { useForm, Controller } from "react-hook-form";
@@ -58,6 +61,8 @@ type Props = {
   postalCode: string
   prefectures: string
   municipalities: string
+  latitude: number | undefined
+  longitude: number | undefined
   image: {
     url: string
   }
@@ -156,6 +161,7 @@ const HouseDetail: React.FC<Props> = (props) => {
     // defaultValues: { evaluation: 2.5 },
     resolver: yupResolver(ReviewSchema),
   });
+  const navigate = useNavigate();
 
   // const [loading, setLoading] = useState<boolean>(true);
   const [reviews, setReviews] = useState<ReviewData[]>([]);
@@ -228,6 +234,15 @@ const HouseDetail: React.FC<Props> = (props) => {
     }
   };
 
+  const handleTagSearch = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const keyword = event.currentTarget.value;
+    navigate('/houses', { state: keyword });
+  };
+
+  const DummyFuction = () => {
+    console.log('');
+  }
+
   useEffect(() => {
     setReviews(props.reviews);
     setTags(props.tags);
@@ -265,9 +280,13 @@ const HouseDetail: React.FC<Props> = (props) => {
           {
             tags?.map(tag => {
               return (
-                <Typography key={tag.id}>
-                  { tag.name }
-                </Typography>
+                <CustomTag
+                  key={tag.id}
+                  text={tag.name}
+                  onClick={(event)=> {
+                    handleTagSearch(event);
+                  }}
+                />
               )
             })
           }
@@ -502,6 +521,7 @@ const HouseDetail: React.FC<Props> = (props) => {
                     userId={review.userId}
                     evaluation={review.evaluation}
                     tags={review.tags}
+                    setState={DummyFuction}
                   />
                 </Box>
               ))
@@ -510,7 +530,12 @@ const HouseDetail: React.FC<Props> = (props) => {
             )
           }
         </TabPanel>
-        <TabPanel value={tab} index={3}>tab4</TabPanel>
+        <TabPanel value={tab} index={3}>
+          <GoogleMapComponent
+            latitude={props.latitude}
+            longitude={props.longitude}
+          />
+        </TabPanel>
       </Card>
     </>
   )

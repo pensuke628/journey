@@ -1,5 +1,10 @@
 class House < ApplicationRecord
   mount_uploader :image, ImageUploader
+
+  # municipalitiesカラムを基準に緯度経度を算出する
+  geocoded_by :municipalities
+  # 住所変更時に経度緯度も変更する
+  after_validation :geocode
   # validation
   validates :name, :prefectures, presence: true
   validates :postal_code, length: { is: 7 }, allow_blank: true

@@ -14,7 +14,7 @@ services:
   back:
     build:
       context: ./backend/
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_dev
     volumes:
       - ./backend:/journey/backend
     ports:
@@ -23,6 +23,8 @@ services:
       - db
     tty: true
     stdin_open: true
+    env_file:
+      - .env
  
   front:
     build:

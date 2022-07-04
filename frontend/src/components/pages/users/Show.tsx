@@ -179,6 +179,10 @@ const UserShow: React.FC = () => {
     setTab(newValue);
   };
 
+  const DummyFuction = () => {
+    console.log('');
+  }
+
   return (
     <>
       { userIsTrue && user ? (
@@ -308,6 +312,7 @@ const UserShow: React.FC = () => {
                             evaluation={review.evaluation}
                             userId={review.userId}
                             tags={review.tags}
+                            setState={DummyFuction}
                           />
                         </Box>
                       ))

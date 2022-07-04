@@ -42,6 +42,8 @@ Rails.application.routes.draw do
         end
       end
       resources :reviews, only: %i[create show update destroy]
+      get 'tags/searchhouses', to: 'tags#searchhouses'
+      get 'tags/searchreviews', to: 'tags#searchreviews'
     end
   end
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

@@ -1,0 +1,134 @@
+version: 2.1
+
+orbs:
+  ruby: circleci/ruby@1.8.0
+  aws-ecr: circleci/aws-ecr@8.1.2
+  aws-ecs: circleci/aws-ecs@2.3.0
+
+jobs:
+  test_backend:
+    docker:
+      - image: cimg/ruby:3.0.2
+      - image: cimg/mysql:8.0.27
+        environment:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: journey_test
+          MYSQL_USER: user
+    environment:
+      BUNDLE_JOBS: "3"
+      BUNDLE_RETRY: "3"
+      APP_DATABASE_HOST: "127.0.0.1"
+      RAILS_ENV: test
+    working_directory: ~/journey
+    steps:
+      - checkout
+
+      # restore gem from cache
+      - restore_cache:
+          keys:
+            - gem-cache-v1-{{ checksum "~/journey/backend/Gemfile.lock" }}
+            - gem-cache-v1-
+          working_directory: ~/journey/backend
+
+      # gem install
+      - run:
+          command: |
+            gem install bundler
+            bundle config set path 'vendor/bundle'
+            bundle install --jobs=4 --retry=3
+          working_directory: ~/journey/backend
+      
+      # save cache
+      - save_cache:
+          key: gem-v1-{{ checksum "~/journey/backend/Gemfile.lock" }}
+          paths:
+              - ~/journey/backend/vendor/bundle
+          working_directory: ~/journey/backend
+
+      # Database setup
+      - run:
+          name: Database setup
+          command: bundle exec rails db:create
+          working_directory: ~/journey/backend
+      - run:
+          name: Database migrate
+          command: bundle exec rails db:migrate
+          working_directory: ~/journey/backend
+      
+      # run rubocop
+      - run:
+          name: rubocop
+          command: bundle exec rubocop
+          working_directory: ~/journey/backend
+
+      # run Rspec
+      - run:
+          name: test
+          command: bundle exec rspec
+          working_directory: ~/journey/backend
+
+  build_and_push_image_frontend:
+    machine:
+      image: ubuntu-2004:202107-02
+    steps:
+      - checkout
+      - aws-ecr/build-and-push-image:
+          tag: "${CIRCLE_SHA1}"
+          region: ${AWS_REGION}
+          registry-id: AWS_ECR_REGISTRY_ID
+          repo: 'journey_frontend_repo'
+          path: ./frontend/
+
+  build_and_push_image_backend:
+    machine:
+      image: ubuntu-2004:202107-02
+    steps:
+      - checkout
+      - aws-ecr/build-and-push-image:
+          tag: "${CIRCLE_SHA1}"
+          region: ${AWS_REGION}
+          registry-id: AWS_ECR_REGISTRY_ID
+          repo: 'journey_backend_repo'
+          path: ./backend/
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - test_backend
+      - build_and_push_image_frontend:
+          requires:
+            - test_backend
+          filters:
+            branches:
+              only: main
+      - build_and_push_image_backend:
+          requires:
+            - test_backend
+          filters:
+            branches:
+              only: main
+      - aws-ecs/deploy-service-update:
+          requires:
+            - build_and_push_image_frontend
+            - build_and_push_image_backend
+          filters:
+            branches:
+              only: main
+          cluster-name: 'journey-cluster'
+          container-image-name-updates: 'container=journey-container-frontend,tag=${CIRCLE_SHA1}'
+          family: 'journey-task-frontend'
+          service-name: 'journey-service-frontend'
+      - aws-ecs/deploy-service-update:
+          requires:
+            - build_and_push_image_frontend
+            - build_and_push_image_backend
+          filters:
+            branches:
+              only: main
+          cluster-name: 'journey-cluster'
+          container-image-name-updates: 'container=journey-container-rails,tag=${CIRCLE_SHA1}'
+          family: 'journey-task-backend'
+          service-name: 'journey-service-backend'
