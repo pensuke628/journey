@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 // MUIのimport
 import Button from '@mui/material/Button';
@@ -16,17 +16,43 @@ import { BookmarkContext } from 'App';
 // apiを叩く関数のimport
 import { createBookmark ,destroyBookmark } from 'lib/api/bookmark';
 import { getHouses } from 'lib/api/house';
+import { getTaggedHouses } from 'lib/api/tag';
 
 const Index: React.FC = () => {
+  const location = useLocation();
   const { bookmarkingHouses, setBookmarkingHouses } = useContext(BookmarkContext);
   const [houses, setHouses] = useState<HouseData[]>([]);
+  const [keyword, setKeyword] = useState<string>(location.state as string);
+  const [filteredHouses, setFilteredHouses] = useState<HouseData[]>([]);
 
-  const getData = async() => {
+  const handleTagSearch = async() => {
+    // デバッグ用の関数
     const res = await getHouses();
     if (res.status === 200) {
       setHouses(res.data);
     }
-  }
+    const targetHouses: HouseData[] = res.data;
+    
+    try {
+      if (keyword === '') {
+        setFilteredHouses(targetHouses);
+        return;
+      }
+      
+      if (keyword) {
+        const sendparams = {
+          name: keyword
+        };
+
+        const response = await getTaggedHouses(sendparams);
+        setFilteredHouses(response.data);
+      } else {
+        setFilteredHouses(targetHouses);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleCreateBookmark = async(house: HouseData) => {
     const params = {
@@ -56,13 +82,13 @@ const Index: React.FC = () => {
   }
 
   useEffect(() => {
-    getData();
+    handleTagSearch();
   },[])
 
   return (
     <>
       <h1>ハウス一覧</h1>
-      {houses.map((house, index) => {
+      {filteredHouses.map((house, index) => {
         return (
           <House
             key={index}

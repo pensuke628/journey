@@ -168,6 +168,11 @@ export interface Tag {
   updatedAt: Date
 }
 
+// タグ検索時のinterface
+export interface TagSearch {
+  name: string
+}
+
 // ユーザー
 export interface UserData {
   id: number
