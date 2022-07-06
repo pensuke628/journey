@@ -683,10 +683,11 @@ const JapanMapComponent = (props: Props) => {
           <Typography>東北</Typography>
           <Box>
           {
-            Tohoku.map((pref) => {
+            Tohoku.map((pref, index) => {
               return (
                 <PrefectureListButton
-                text={pref}
+                  key={index}
+                  text={pref}
                 />
                 )
               })
@@ -696,9 +697,10 @@ const JapanMapComponent = (props: Props) => {
         <Box>
           <Typography>関東</Typography>
           {
-            Kanto.map((pref) => {
+            Kanto.map((pref, index) => {
               return (
                 <PrefectureListButton
+                  key={index}
                   text={pref}
                 />
               )
@@ -708,9 +710,10 @@ const JapanMapComponent = (props: Props) => {
         <Box>
           <Typography>中部</Typography>
           {
-            Chubu.map((pref) => {
+            Chubu.map((pref, index) => {
               return (
                 <PrefectureListButton
+                  key={index}
                   text={pref}
                 />
               )
@@ -720,9 +723,10 @@ const JapanMapComponent = (props: Props) => {
         <Box>
           <Typography>近畿</Typography>
           {
-            Kinki.map((pref) => {
+            Kinki.map((pref, index) => {
               return (
                 <PrefectureListButton
+                  key={index}
                   text={pref}
                 />
               )
@@ -732,9 +736,10 @@ const JapanMapComponent = (props: Props) => {
         <Box>
           <Typography>中国</Typography>
           {
-            Chugoku.map((pref) => {
+            Chugoku.map((pref, index) => {
               return (
                 <PrefectureListButton
+                  key={index}
                   text={pref}
                 />
               )
@@ -744,9 +749,10 @@ const JapanMapComponent = (props: Props) => {
         <Box>
           <Typography>四国</Typography>
           {
-            Shikoku.map((pref) => {
+            Shikoku.map((pref, index) => {
               return (
                 <PrefectureListButton
+                  key={index}
                   text={pref}
                 />
               )
@@ -756,9 +762,10 @@ const JapanMapComponent = (props: Props) => {
         <Box>
           <Typography>九州</Typography>
           {
-            Kyushu.map((pref) => {
+            Kyushu.map((pref, index) => {
               return (
                 <PrefectureListButton
+                  key={index}
                   text={pref}
                 />
               )
