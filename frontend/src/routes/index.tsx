@@ -2,8 +2,6 @@ import React from 'react';
 import { Routes, Route } from "react-router-dom";
 
 import Top from 'components/pages/Top';
-import About from 'components/pages/About';
-import Contact from 'components/pages/Contact';
 import SignIn from 'components/pages/SignIn';
 import SignUp from 'components/pages/SignUp';
 import PasswordReset from 'components/pages/PasswordReset';
@@ -19,6 +17,7 @@ import MessageRoom  from 'components/pages/users/MessageRoom';
 import OwnerIndex from 'components/pages/owners/Index';
 import OwnerNew from 'components/pages/owners/New';
 import ReviewShow from 'components/pages/reviews/Show';
+import ReviewSearch from 'components/pages/reviews/Search';
 
 import ActionCableConnection from 'components/layouts/ActionCableConnection';
 
@@ -33,10 +32,8 @@ const Routing: React.FC = () => {
       <Routes>
         <Route path='/' element={<Top/>} />
         <Route path='actioncable' element={<ActionCableConnection/>} />
-        <Route path='about' element={<About/>} />
         {/* <Route path="/signup" element={<SignUp/>}/> */}
-        <Route path='contact' element={<Contact/>}/>
-        <Route path='passwordreset' element={<PasswordReset/>}/>
+        {/* <Route path='passwordreset' element={<PasswordReset/>}/> */}
         <Route path='signin' element={<SignIn/>}/>
         <Route path='signup' element={<SignUp/>}/>
         <Route path='users'>
@@ -65,6 +62,7 @@ const Routing: React.FC = () => {
           <Route index element={<OwnerNew/>}/>
         </Route>
         <Route path='reviews'>
+          <Route path='search' element={<ReviewSearch/>}/>
           <Route path=':id'>
             <Route index element={<ReviewShow/>}/>
           </Route>

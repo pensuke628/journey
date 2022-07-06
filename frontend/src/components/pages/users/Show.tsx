@@ -179,6 +179,10 @@ const UserShow: React.FC = () => {
     setTab(newValue);
   };
 
+  const DummyFuction = () => {
+    console.log('');
+  }
+
   return (
     <>
       { userIsTrue && user ? (
@@ -191,7 +195,7 @@ const UserShow: React.FC = () => {
                   user.backgroundImage ? user.backgroundImage : defaultBckgroundImage
                 }
                 alt='背景画像を表示する予定です'
-                height='150'
+                height='300px'
               />
               <CardContent>
                 <Grid
@@ -199,16 +203,22 @@ const UserShow: React.FC = () => {
                   spacing={2}
                   justifyContent='center'
                 > 
-                  <Grid item xs={3} sm={2}>
+                  <Grid item xs={12} md={7}>
                     <Avatar
                       alt='avatar'
-                      // src={user.avatar}
-                      sx= {{ width: 56, height: 56 }}
+                      src={user.avatar}
+                      sx= {{
+                        width: 56,
+                        height: 56,
+                        mt: -6
+                      }}
                     />
-                  </Grid>
-                  <Grid item xs={9} sm={7}>
                     <Box>
-                      <Typography>{user.name}さん</Typography>
+                      <Typography
+                        variant='h5'
+                      >
+                        {user.name}さん
+                      </Typography>
                       {
                         user.profile? (
                           <Typography>{user.profile}</Typography>
@@ -218,7 +228,7 @@ const UserShow: React.FC = () => {
                       }
                     </Box>
                   </Grid>
-                  <Grid item xs={8} sm={3}>
+                  <Grid item xs={6} sm={5} md={3}>
                       {
                         user.id === currentUser?.id ? (
                           <FlexBox sx={{ flexDirection: 'column' }}>
@@ -308,6 +318,7 @@ const UserShow: React.FC = () => {
                             evaluation={review.evaluation}
                             userId={review.userId}
                             tags={review.tags}
+                            setState={DummyFuction}
                           />
                         </Box>
                       ))
