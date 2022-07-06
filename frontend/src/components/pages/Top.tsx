@@ -18,7 +18,7 @@ import SearchIcon from '@mui/icons-material/Search';
 // componentのimport
 import House from 'components/layouts/House';
 import JapanMapComponent from 'components/layouts/JapanMapComponent';
-import About from 'components/pages/About'
+import About from 'components/layouts/About'
 
 // interfaceのimport
 import { HouseData } from 'interfaces';
