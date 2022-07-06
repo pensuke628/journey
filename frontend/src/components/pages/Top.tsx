@@ -2,28 +2,36 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 // MUIのimport
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
 import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
 // MUIIconsのimport
 import SearchIcon from '@mui/icons-material/Search';
 // componentのimport
 import House from 'components/layouts/House';
 import JapanMapComponent from 'components/layouts/JapanMapComponent';
+import About from 'components/layouts/About'
 
+// interfaceのimport
 import { HouseData } from 'interfaces';
 
 //  Contextのimport
 import { AuthContext, BookmarkContext } from 'App';
 
+// APIを叩く関数のimport
 import { createBookmark ,destroyBookmark } from 'lib/api/bookmark';
 import { getHouses } from 'lib/api/house';
 
+// 画像データのimport
+import backgroundImage from '../../images/top.jpg';
 
 const Top: React.FC = () => {
   const { isSignedIn, currentUser }= useContext(AuthContext);
@@ -137,34 +145,38 @@ const Top: React.FC = () => {
   },[])
 
   const TopPage: React.FC = () => {
-    return(
-      <>
-      {
-        (isSignedIn && currentUser) ? (
-          <>        
-            <h1>ここはテスト用Topページです</h1>
-            <h1>ようこそ！ {currentUser?.name} さん</h1>
-            <Button
-              component={RouterLink}
-              to='/owners'
-              variant='contained'
-            >
-              オーナーになる
-            </Button>
-            {/* <Button
-              component={RouterLink}
-              to='/actioncable'
-              variant='contained'
-            >
-              ActionCableへ（debug）
-            </Button> */}
-          </>
-        ) : (
-          <h1>not signed in</h1>
-        )
-      }
-      
-    </>
+    return(          
+      <Box
+        sx={{
+          py: '300px',
+          backgroundImage: `url(${backgroundImage})`,
+          textAlign: 'center'
+        }}
+      >
+        {
+          (isSignedIn && currentUser) ? (
+            <>
+              <Typography variant='h1' sx={{ color: 'white' }}>
+                ここはテスト用Topページです
+              </Typography>
+              <Typography variant='h1' sx={{ color: 'white' }}>
+                ようこそ！ {currentUser?.name} さん
+              </Typography>
+              <Button
+                component={RouterLink}
+                to='/owners'
+                variant='contained'
+              >
+                オーナーになる
+              </Button>
+            </>
+          ) : (
+            <Typography variant='h1' sx={{ color: 'white' }}>
+              TOP
+            </Typography>
+          )
+        }
+      </Box>
     );
   }
 
@@ -198,7 +210,11 @@ const Top: React.FC = () => {
         ) : (
           <>
             <TopPage/>
-            <Card>
+            <About/>
+            <Card
+              elevation={0}
+              sx={{ pt: 3 }}
+            >
               <CardHeader
                 title='キーワードから探す'
               />
@@ -221,22 +237,28 @@ const Top: React.FC = () => {
                 />
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader
-                title='エリアから探す'
-              />
-              <CardContent
-                sx={{
-                  maxWidth: '550px'
-                }}
-              >
-                <JapanMapComponent
-                  handleClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handlePrefectureSearch(event)}
-                />
-              </CardContent>
-            </Card>
-            <Button component={RouterLink} to='/users' variant='contained' sx={{ m:1 }}>ユーザー一覧</Button>
-            <Button component={RouterLink} to='/houses' variant='contained' sx={{ m:1 }}>施設一覧</Button>
+            <Grid container justifyContent='center'>
+              <Grid item xs={12}>
+                <Card
+                  elevation={0}
+                  sx={{ pt: 3 }}
+                >
+                  <CardHeader
+                    title='エリアから探す'
+                  />
+                  <CardContent
+                    sx={{
+                      maxWidth: '1050px',
+                      mx: 'auto'
+                    }}
+                  >
+                    <JapanMapComponent
+                      handleClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handlePrefectureSearch(event)}
+                    />
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
           </>
         )    
       }      
