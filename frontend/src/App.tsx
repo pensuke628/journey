@@ -4,8 +4,10 @@ import React, {useState, useEffect, createContext} from 'react';
 // routingのimport
 import Routing from 'routes/index';
 
+// MUIのimport
+import Container from '@mui/material/Container';
+
 // componentのimport
-// import Header from 'components/layouts/Header';
 import ResponsiveDrawer from 'components/layouts/ResponsiveDrawer';
 import Footer from 'components/layouts/Footer';
 
@@ -14,6 +16,9 @@ import { HouseData, Notification, ReviewData, UserData } from 'interfaces/index'
 
 // apiを叩く関数のimport
 import { getCurrentUser } from 'lib/api/auth';
+
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { themeOptions } from './themeOption';
 
 // グローバルで扱う変数・関数
 export const AuthContext = createContext({} as {
@@ -52,6 +57,7 @@ export const RelationshipContext = createContext({} as {
 
 
 const App: React.FC = () => {
+  const theme = createTheme(themeOptions);
   const [loading, setLoading] = useState<boolean>(true);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<UserData | undefined>();
@@ -96,24 +102,27 @@ const App: React.FC = () => {
 
   return (
     <>
+      <ThemeProvider theme={theme}>
       <AuthContext.Provider value={{ loading, setLoading, isSignedIn, setIsSignedIn, currentUser, setCurrentUser}}>
       <RelationshipContext.Provider value={{ followingUsers, setFollowingUsers }}>
       <BookmarkContext.Provider value={{ bookmarkingHouses, setBookmarkingHouses }}>
       <LikeContext.Provider value={{ likingReviews, setLikingReviews }}>
       <NotificationContext.Provider value={{ notifications, setNotifications}}>
       <OwnerContext.Provider value={{ owneredHouses, setOwneredHouses }}>
-        
+        <Container>
         <ResponsiveDrawer>
           {/* <Header/> */}
           <Routing/>
           <Footer/>
         </ResponsiveDrawer>
+        </Container>
       </OwnerContext.Provider>
       </NotificationContext.Provider>
       </LikeContext.Provider>
       </BookmarkContext.Provider>
       </RelationshipContext.Provider>
       </AuthContext.Provider>
+      </ThemeProvider>
     </>
   )
 }

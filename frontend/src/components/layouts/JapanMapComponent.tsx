@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 
+// MUIのimport
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
+// componentのimport
 import PrefectureSelectButton from 'components/utils/PrefectureSelectButton';
 
+// 画像ファイルのimport
 import JapanMap from '../../images/JapanMap.png';
-import HokkaidoMap from '../../images/HokkaidoMap.png';
 import TohokuMap from '../../images/TohokuMap.png';
 import KantoMap from '../../images/KantoMap.png';
 import ChubuMap from '../../images/ChubuMap.png';
@@ -14,15 +17,39 @@ import KinkiMap from '../../images/KinkiMap.png';
 import ChugokuMap from '../../images/ChugokuMap.png';
 import ShikokuMap from '../../images/ShikokuMap.png';
 import KyushuMap from '../../images/KyushuMap.png';
-import OkinawaMap from '../../images/OkinawaMap.png';
 
 type Props = {
   handleClick:(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
+const Tohoku: string[] = ['青森', '秋田', '岩手', '山形', '宮城', '福島'];
+const Kanto: string[] = ['茨城', '栃木', '群馬', '千葉', '埼玉', '東京', '神奈川'];
+const Chubu: string[] = ['新潟', '富山', '石川', '福井', '長野', '岐阜', '山梨', '静岡', '愛知'];
+const Kinki: string[] = ['滋賀', '京都', '兵庫', '三重', '奈良', '大阪', '和歌山'];
+const Chugoku: string[] = ['鳥取', '島根', '岡山', '広島', '山口'];
+const Shikoku: string[] = ['香川', '愛媛', '徳島', '高知'];
+const Kyushu: string[] = ['福岡', '佐賀', '長崎', '大分', '熊本', '宮崎', '鹿児島'];
+
 const JapanMapComponent = (props: Props) => {
   const [backgroundImage, setBackgroundImage] = useState(JapanMap);
   const [Area, setArea] = useState('Japan');
+  const {handleClick} = props
+
+  const PrefectureListButton = (props: {text: string}) => {
+    return (
+      <Button
+        color='inherit'
+        value={props.text}
+        onClick={(event) => handleClick(event)}
+      >
+        <Typography>
+          {props.text}
+        </Typography>
+      </Button>
+    );
+  }
+
+
 
   const setAreaButton = () => {
     if (Area === 'Japan') {
@@ -600,11 +627,6 @@ const JapanMapComponent = (props: Props) => {
       display: setAllPrefectureButton,
     },
   };
-
-  const handleSetHokkaidoImage = () => {
-    setBackgroundImage(HokkaidoMap);
-    setArea('Hokkaido');
-  };
   
   const handleSetTohokuImage = () => {
     setBackgroundImage(TohokuMap);
@@ -640,11 +662,6 @@ const JapanMapComponent = (props: Props) => {
     setBackgroundImage(KyushuMap);
     setArea('Kyushu');
   };
-  
-  const handleSetOkinawaImage = () => {
-    setBackgroundImage(OkinawaMap);
-    setArea('Okinawa');
-  };
 
   const handleSetJapanImage = () => {
     setBackgroundImage(JapanMap);
@@ -652,330 +669,425 @@ const JapanMapComponent = (props: Props) => {
   };
 
   return (
-    <Box
-      sx={{
-        position: 'relative'
-      }}
-    >
+    <Box sx={{display: 'flex'}}>
       <Box
-        component='img'
-        width='100%'
-        height='400px'
-        src={backgroundImage}
-      />
+        sx={{
+          width: '500px'
+        }}
+      >
+        <Box>
+          <Typography>北海道</Typography>
+          <PrefectureListButton text='北海道'/>
+        </Box>
+        <Box>
+          <Typography>東北</Typography>
+          <Box>
+          {
+            Tohoku.map((pref) => {
+              return (
+                <PrefectureListButton
+                text={pref}
+                />
+                )
+              })
+            }
+          </Box>
+        </Box>
+        <Box>
+          <Typography>関東</Typography>
+          {
+            Kanto.map((pref) => {
+              return (
+                <PrefectureListButton
+                  text={pref}
+                />
+              )
+            })
+          }
+        </Box>
+        <Box>
+          <Typography>中部</Typography>
+          {
+            Chubu.map((pref) => {
+              return (
+                <PrefectureListButton
+                  text={pref}
+                />
+              )
+            })
+          }
+        </Box>
+        <Box>
+          <Typography>近畿</Typography>
+          {
+            Kinki.map((pref) => {
+              return (
+                <PrefectureListButton
+                  text={pref}
+                />
+              )
+            })
+          }
+        </Box>
+        <Box>
+          <Typography>中国</Typography>
+          {
+            Chugoku.map((pref) => {
+              return (
+                <PrefectureListButton
+                  text={pref}
+                />
+              )
+            })
+          }
+        </Box>
+        <Box>
+          <Typography>四国</Typography>
+          {
+            Shikoku.map((pref) => {
+              return (
+                <PrefectureListButton
+                  text={pref}
+                />
+              )
+            })
+          }
+        </Box>
+        <Box>
+          <Typography>九州</Typography>
+          {
+            Kyushu.map((pref) => {
+              return (
+                <PrefectureListButton
+                  text={pref}
+                />
+              )
+            })
+          }
+        </Box>
+        <Box>
+          <Typography>沖縄</Typography>
+          <PrefectureListButton text='沖縄'/>
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          display: {
+            xs: 'none', sm: 'none', md: 'block'
+          },
+          position: 'relative',
+          height: '410px',
+          Width: '550px',
+        }}
+      >
+        <Box
+          component='img'
+          width='508px'
+          height='400px'
+          src={backgroundImage}
+        />
 
-      {/* 北海道 */}
-      <PrefectureSelectButton
-        text='北海道'
-        sx={styles.hokkaido}
-        onClick={(event) => props.handleClick(event) }
-      />
-      {/* <Button
-        onClick={handleSetHokkaidoImage}
-        sx={styles.hokkaido}
-      >
-        北海道
-      </Button> */}
+        {/* 北海道 */}
+        <PrefectureSelectButton
+          text='北海道'
+          sx={styles.hokkaido}
+          onClick={(event) => props.handleClick(event) }
+        />
 
-      {/* 東北地方 */}
-      <Button
-        onClick={handleSetTohokuImage}
-        sx={styles.tohoku}
-      >
-        東北
-      </Button>
-      <PrefectureSelectButton
-        text='青森'
-        sx={styles.aomori}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='秋田'
-        sx={styles.akita}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='岩手'
-        sx={styles.iwate}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='山形'
-        sx={styles.yamagata}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='宮城'
-        sx={styles.miyagi}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='福島'
-        sx={styles.fukushima}
-        onClick={(event) => props.handleClick(event) }
-      />
-      
-      {/* 関東地方 */}
-      <Button
-        onClick={handleSetKantoImage}
-        sx={styles.kanto}
-      >
-        関東
-      </Button>
-      <PrefectureSelectButton
-        text='茨城'
-        sx={styles.ibaraki}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='栃木'
-        sx={styles.tochigi}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='群馬'
-        sx={styles.gunma}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='千葉'
-        sx={styles.chiba}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='埼玉'
-        sx={styles.saitama}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='東京'
-        sx={styles.tokyo}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='神奈川'
-        sx={styles.kanagawa}
-        onClick={(event) => props.handleClick(event) }
-      />
-
-      {/* 中部地方 */}
-      <Button
-        onClick={handleSetChubuImage}
-        sx={styles.chubu}
-      >
-        中部
-      </Button>
-      <PrefectureSelectButton
-        text='新潟'
-        sx={styles.nigata}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='富山'
-        sx={styles.toyama}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='石川'
-        sx={styles.ishikawa}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='福井'
-        sx={styles.fukui}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='長野'
-        sx={styles.nagano}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='岐阜'
-        sx={styles.gifu}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='山梨'
-        sx={styles.yamanashi}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='静岡'
-        sx={styles.shizuoka}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='愛知'
-        sx={styles.aichi}
-        onClick={(event) => props.handleClick(event) }
-      />
-
-      {/* 近畿地方 */}
-      <Button
-        onClick={handleSetKinkiImage}
-        sx={styles.kinki}
-      >
-        近畿
-      </Button>
-      <PrefectureSelectButton
-        text='滋賀'
-        sx={styles.shiga}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='京都'
-        sx={styles.kyoto}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='兵庫'
-        sx={styles.hyogo}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='三重'
-        sx={styles.mie}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='奈良'
-        sx={styles.nara}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='大阪'
-        sx={styles.osaka}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='和歌山'
-        sx={styles.wakayama}
-        onClick={(event) => props.handleClick(event) }
-      />
-      
-      {/* 中国地方 */}
-      <Button
-        onClick={handleSetChugokuImage}
-        sx={styles.chugoku}
-      >
-        中国
-      </Button>
-      <PrefectureSelectButton
-        text='鳥取'
-        sx={styles.tottori}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='島根'
-        sx={styles.shimane}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='岡山'
-        sx={styles.okayama}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='広島'
-        sx={styles.hiroshima}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='山口'
-        sx={styles.yamaguchi}
-        onClick={(event) => props.handleClick(event) }
-      />
-
-      {/* 四国地方 */}
-      <Button
-        onClick={handleSetShikokuImage}
-        sx={styles.shikoku}
-      >
-        四国
-      </Button>
-      <PrefectureSelectButton
-        text='香川'
-        sx={styles.kagawa}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='愛媛'
-        sx={styles.ehime}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='徳島'
-        sx={styles.tokushima}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='高知'
-        sx={styles.kochi}
-        onClick={(event) => props.handleClick(event) }
-      />
-
-      {/* 九州地方 */}            
-      <Button
-        onClick={handleSetKyushuImage}
-        sx={styles.kyushu}
-      >
-        九州
-      </Button>
-      <PrefectureSelectButton
-        text='福岡'
-        sx={styles.fukuoka}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='佐賀'
-        sx={styles.saga}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='長崎'
-        sx={styles.nagasaki}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='大分'
-        sx={styles.oita}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='熊本'
-        sx={styles.kumamoto}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='宮崎'
-        sx={styles.miyazaki}
-        onClick={(event) => props.handleClick(event) }
-      />
-      <PrefectureSelectButton
-        text='鹿児島'
-        sx={styles.kagoshima}
-        onClick={(event) => props.handleClick(event) }
-      />
-
-      {/* 沖縄 */}
-      <PrefectureSelectButton
-        text='沖縄'
-        sx={styles.okinawa}
-        onClick={(event) => props.handleClick(event) }
-      />
-        {/* <Button
-          onClick={handleSetOkinawaImage}
-          sx={styles.okinawa}
+        {/* 東北地方 */}
+        <Button
+          onClick={handleSetTohokuImage}
+          sx={styles.tohoku}
         >
-          沖縄
-        </Button> */}
-      <Button
-        onClick={handleSetJapanImage}
-        sx={styles.allPrefectures}
-      >
-        全国へ
-      </Button>
+          東北
+        </Button>
+        <PrefectureSelectButton
+          text='青森'
+          sx={styles.aomori}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='秋田'
+          sx={styles.akita}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='岩手'
+          sx={styles.iwate}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='山形'
+          sx={styles.yamagata}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='宮城'
+          sx={styles.miyagi}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='福島'
+          sx={styles.fukushima}
+          onClick={(event) => props.handleClick(event) }
+        />
+        
+        {/* 関東地方 */}
+        <Button
+          onClick={handleSetKantoImage}
+          sx={styles.kanto}
+        >
+          関東
+        </Button>
+        <PrefectureSelectButton
+          text='茨城'
+          sx={styles.ibaraki}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='栃木'
+          sx={styles.tochigi}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='群馬'
+          sx={styles.gunma}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='千葉'
+          sx={styles.chiba}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='埼玉'
+          sx={styles.saitama}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='東京'
+          sx={styles.tokyo}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='神奈川'
+          sx={styles.kanagawa}
+          onClick={(event) => props.handleClick(event) }
+        />
+
+        {/* 中部地方 */}
+        <Button
+          onClick={handleSetChubuImage}
+          sx={styles.chubu}
+        >
+          中部
+        </Button>
+        <PrefectureSelectButton
+          text='新潟'
+          sx={styles.nigata}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='富山'
+          sx={styles.toyama}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='石川'
+          sx={styles.ishikawa}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='福井'
+          sx={styles.fukui}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='長野'
+          sx={styles.nagano}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='岐阜'
+          sx={styles.gifu}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='山梨'
+          sx={styles.yamanashi}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='静岡'
+          sx={styles.shizuoka}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='愛知'
+          sx={styles.aichi}
+          onClick={(event) => props.handleClick(event) }
+        />
+
+        {/* 近畿地方 */}
+        <Button
+          onClick={handleSetKinkiImage}
+          sx={styles.kinki}
+        >
+          近畿
+        </Button>
+        <PrefectureSelectButton
+          text='滋賀'
+          sx={styles.shiga}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='京都'
+          sx={styles.kyoto}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='兵庫'
+          sx={styles.hyogo}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='三重'
+          sx={styles.mie}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='奈良'
+          sx={styles.nara}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='大阪'
+          sx={styles.osaka}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='和歌山'
+          sx={styles.wakayama}
+          onClick={(event) => props.handleClick(event) }
+        />
+        
+        {/* 中国地方 */}
+        <Button
+          onClick={handleSetChugokuImage}
+          sx={styles.chugoku}
+        >
+          中国
+        </Button>
+        <PrefectureSelectButton
+          text='鳥取'
+          sx={styles.tottori}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='島根'
+          sx={styles.shimane}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='岡山'
+          sx={styles.okayama}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='広島'
+          sx={styles.hiroshima}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='山口'
+          sx={styles.yamaguchi}
+          onClick={(event) => props.handleClick(event) }
+        />
+
+        {/* 四国地方 */}
+        <Button
+          onClick={handleSetShikokuImage}
+          sx={styles.shikoku}
+        >
+          四国
+        </Button>
+        <PrefectureSelectButton
+          text='香川'
+          sx={styles.kagawa}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='愛媛'
+          sx={styles.ehime}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='徳島'
+          sx={styles.tokushima}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='高知'
+          sx={styles.kochi}
+          onClick={(event) => props.handleClick(event) }
+        />
+
+        {/* 九州地方 */}            
+        <Button
+          onClick={handleSetKyushuImage}
+          sx={styles.kyushu}
+        >
+          九州
+        </Button>
+        <PrefectureSelectButton
+          text='福岡'
+          sx={styles.fukuoka}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='佐賀'
+          sx={styles.saga}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='長崎'
+          sx={styles.nagasaki}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='大分'
+          sx={styles.oita}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='熊本'
+          sx={styles.kumamoto}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='宮崎'
+          sx={styles.miyazaki}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <PrefectureSelectButton
+          text='鹿児島'
+          sx={styles.kagoshima}
+          onClick={(event) => props.handleClick(event) }
+        />
+
+        {/* 沖縄 */}
+        <PrefectureSelectButton
+          text='沖縄'
+          sx={styles.okinawa}
+          onClick={(event) => props.handleClick(event) }
+        />
+        <Button
+          onClick={handleSetJapanImage}
+          sx={styles.allPrefectures}
+        >
+          全国へ
+        </Button>
+      </Box>
     </Box>
   )
 };
