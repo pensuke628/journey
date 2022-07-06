@@ -9,18 +9,15 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import Checkbox from '@mui/material/Checkbox';
 import Container from '@mui/material/Container';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
+
 // MUIIconsのimport
 import EmailIcon from '@mui/icons-material/Email';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import GoogleIcon from '@mui/icons-material/Google';
 import LockIcon from '@mui/icons-material/Lock';
-import TwitterIcon from '@mui/icons-material/Twitter';
+
+// componentのimport
+import AlertMessage from 'components/utils/AlertMessage';
 
 // ReactHooksFormのimport
 import { useForm, Controller } from 'react-hook-form';
@@ -28,14 +25,15 @@ import { useForm, Controller } from 'react-hook-form';
 // interfaceのimport
 import { SignInParams } from 'interfaces/index';
 
+// Contextのimport
 import { AuthContext, BookmarkContext, LikeContext, NotificationContext, OwnerContext } from 'App';
-import AlertMessage from 'components/utils/AlertMessage';
+
+// APIを叩く関数のimport
 import {signIn} from 'lib/api/auth';
 import { getBookmark } from 'lib/api/bookmark';
 import { getLike } from 'lib/api/like';
 import { getNotifications } from 'lib/api/notification';
 import { getOwners } from 'lib/api/owner';
-
 
 const CustomCard = styled(Card)({
   flexGrow: 1,
@@ -154,22 +152,6 @@ const SignIn: React.FC = () => {
                       )}
                     />
                   </FlexBox>
-                  <Box
-                    sx={{
-                      display: 'flex-column',
-                      textAlign: 'left',
-                    }}
-                  >
-                    <FormControlLabel control={<Checkbox/>} label='ログイン状態を保持する' sx={{ mr: 'auto' }}/>
-                    <Typography>パスワードを忘れた場合は
-                      <Typography
-                        component={RouterLink}
-                        to='/passwordreset'
-                      >
-                        こちら
-                      </Typography>
-                    </Typography>
-                  </Box>
                   <Button
                     type='submit'
                     variant='contained'
@@ -177,63 +159,6 @@ const SignIn: React.FC = () => {
                   >
                     ログイン
                   </Button>
-                </CardContent>
-              </CustomCard>
-              <CustomCard>
-                <CustomCardHeader title='他サービスIDでログイン'/>
-                <CardContent>
-                  <Stack
-                   spacing={3}
-                   alignItems='center'
-                   justifyContent='center'
-                   m={3}
-                  >
-                    <Button
-                      variant='outlined'
-                      color='inherit'
-                      size='large'
-                      startIcon={
-                        <TwitterIcon
-                          sx={{
-                            color: '#1DA1F2'
-                          }}
-                        />
-                      }
-                      sx={{
-                        width: '60%'
-                      }}
-                    >
-                      Twitter
-                    </Button>
-                    <Button
-                      variant='outlined'
-                      color='inherit'
-                      size='large'             
-                      startIcon={
-                        <FacebookIcon
-                          sx={{
-                            color: '#1877F2'
-                          }}
-                        />
-                      }
-                      sx={{
-                        width: '60%'
-                      }}
-                    >
-                      Facebook
-                    </Button>
-                    <Button
-                      variant='outlined'
-                      color='inherit'
-                      size='large'
-                      startIcon={<GoogleIcon/>}
-                      sx={{
-                        width: '60%'
-                      }}
-                    >
-                      Google
-                    </Button>
-                  </Stack>
                 </CardContent>
               </CustomCard>
               <AlertMessage
