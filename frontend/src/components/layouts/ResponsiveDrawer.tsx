@@ -28,7 +28,9 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
 // MUIIconsのimport
+import AddIcon from '@mui/icons-material/Add';
 import HomeIcon from '@mui/icons-material/Home';
+import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -53,7 +55,6 @@ interface Props {
 }
 
 const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
-  // const { window } = props;
   const navigate = useNavigate();
   const { loading, isSignedIn, setIsSignedIn, currentUser } = useContext(AuthContext);
   const { notifications, setNotifications } = useContext(NotificationContext);
@@ -68,25 +69,29 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
 
   const drawer = (
     <div>
-      <Toolbar />
+      <Toolbar>
+        <Link
+          component={RouterLink}
+          to='/'
+          color='inherit'
+          underline='none'
+          sx={{
+            textAlign: 'center'
+          }}
+        >
+          <img
+            src='logo.png'
+            height='100'
+          />
+        </Link>
+      </Toolbar>
       <Divider />
       <List>
         <ListItem disablePadding>
           <ListItemButton
             component={RouterLink}
-            to='/about'
-            onClick={handleDrawerToggle}
-          >
-            <ListItemIcon>
-              <QuestionMarkIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Journeyとは'}/>
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton
-            component={RouterLink}
             to='/'
+            onClick={handleDrawerToggle}
           >
             <ListItemIcon>
               <HomeIcon />
@@ -94,12 +99,20 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
             <ListItemText primary={'トップページ'}/>
           </ListItemButton>
         </ListItem>
+        {/* <ListItem disablePadding>
+          <ListItemButton
+            component={RouterLink}
+            to='/about'
+          >
+            <ListItemIcon>
+              <QuestionMarkIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Journeyとは'}/>
+          </ListItemButton>
+        </ListItem> */}
       </List>
     </div>
   );
-
-  // const container = window !== undefined ? () => window().document.body : undefined;
-  // const year: number = new Date().getFullYear();
 
   const AuthMenu:React.FC = () => {
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -317,7 +330,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
           <Box sx={{ flexGrow: 0 }}>
             <Box
               sx = {{
-                display:  { xs: 'none', sm: 'flex' },
+                display:  { xs: 'none', md: 'flex' },
                 alignItems: 'center',
                 textAlign: 'center',
               }}
@@ -325,21 +338,38 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
                <Button
                   component={RouterLink}
                   to='signup'
-                  color="inherit"
+                  variant='contained'
+                  color='inherit'
+                  sx={{
+                    mx:1,
+                    color: '#111',
+                    backgroundColor: '#ccc',
+                    borderRadius: '28px',
+                  }}
                >
-                新規登録
+                <Typography>
+                  新規登録
+                </Typography>
                </Button>
                <Button
                   component={RouterLink}
                   to='signin'
-                  color="inherit"
+                  variant='contained'
+                  color='success'
+                  sx={{
+                    mx: 1,
+                    // backgroundColor: '#000',
+                    borderRadius: '28px'
+                  }}
                >
-                 ログイン
+                <Typography>
+                   ログイン
+                </Typography>
                </Button>
             </Box>
             <Box
               sx = {{
-                display: { xs: 'flex', sm: 'none' }
+                display: { sm: 'flex', md: 'none' }
               }}
             >
               <Tooltip title="ログインメニュー">
@@ -393,84 +423,107 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box
+      sx={{ 
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color='inherit'
-            aria-label='open drawer'
-            edge='start'
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Link
-            component={RouterLink}
-            to='/'
-            color='inherit'
-            underline='none'
+        <AppBar
+          position='relative'
+          elevation={0}
+          sx={{
+            // width: { md: `calc(100% - ${drawerWidth}px)` },
+            // ml: { md: `${drawerWidth}px` },
+            backgroundColor: '#fff',
+            height: '100px'
+          }}
+        >
+          <Toolbar
             sx={{
-              flexGrow: 1
+              display: 'flex',
+              justifyContent: 'space-between',
             }}
           >
-            Journey
-          </Link>
-          <AuthMenu/>
-        </Toolbar>
-      </AppBar>
-      <Box
-        component='nav'
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label='mailbox folders'
-      >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Drawer
-          // container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
+            <IconButton
+              color='inherit'
+              aria-label='open drawer'
+              edge='start'
+              onClick={handleDrawerToggle}
+              sx={{
+                mr: 2,
+                display: { md: 'none' },
+                color: '#000'
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Link
+              component={RouterLink}
+              to='/'
+              color='inherit'
+              underline='none'
+              sx={{
+                textAlign: { sm: 'center', md: 'left'},
+              }}
+            >
+              <img
+                src='logo.png'
+                height='100'
+              />
+            </Link>
+            <AuthMenu/>
+          </Toolbar>
+        </AppBar>
+        <Box
+          component='nav'
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            // width: { md: drawerWidth },
+            flexShrink: { md: 0 }
           }}
+          aria-label='mailbox folders'
         >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <Drawer
+            // container={container}
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+            sx={{
+              display: { xs: 'block', md: 'none' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            }}
+          >
+            {drawer}
+          </Drawer>
+          <Drawer
+            variant="permanent"
+            sx={{
+              // display: { xs: 'none', md: 'block' },
+              display: 'none',
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            }}
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Box>
+        <Box
+          // sx={{
+            // width: { md: `calc(100% - ${drawerWidth}px)` },
+            // mt: '100px',
+            // mx: 'auto'
+          // }}
         >
-          {drawer}
-        </Drawer>
-      </Box>
-      <Box
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          mt: '70px',
-          mx: 'auto'
-        }}
-        
-      >
-        {children}
-      </Box>
+          {children}
+        </Box>
       <Paper
         sx={{
-          display: { xs: 'block', sm: 'none' },
+          display: { sm: 'block', md: 'none' },
           position: 'fixed',
           bottom: 0,
           left: 0,
@@ -493,9 +546,15 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
           />
           <BottomNavigationAction
             component={RouterLink}
-            to='about'
-            label='Journeyとは'
-            icon={<QuestionMarkIcon />}
+            to='/signin'
+            label='ログイン'
+            icon={<LoginIcon />}
+          />
+          <BottomNavigationAction
+            component={RouterLink}
+            to='/signup'
+            label='新規登録'
+            icon={<AddIcon />}
           />
         </BottomNavigation>
       </Paper>
