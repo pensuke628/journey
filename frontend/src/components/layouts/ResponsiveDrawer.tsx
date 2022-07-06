@@ -10,7 +10,6 @@ import Box from '@mui/material/Box';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
@@ -29,7 +28,9 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
 // MUIIconsのimport
+import AddIcon from '@mui/icons-material/Add';
 import HomeIcon from '@mui/icons-material/Home';
+import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -543,12 +544,18 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
             label='TOP'
             icon={<HomeIcon />}
           />
-          {/* <BottomNavigationAction
+          <BottomNavigationAction
             component={RouterLink}
-            to='about'
-            label='Journeyとは'
-            icon={<QuestionMarkIcon />}
-          /> */}
+            to='/signin'
+            label='ログイン'
+            icon={<LoginIcon />}
+          />
+          <BottomNavigationAction
+            component={RouterLink}
+            to='/signup'
+            label='新規登録'
+            icon={<AddIcon />}
+          />
         </BottomNavigation>
       </Paper>
     </Box>
