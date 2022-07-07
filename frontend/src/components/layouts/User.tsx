@@ -107,7 +107,7 @@ const User: React.FC<UserData> = (props) => {
   return (
     <Card
       sx={{
-        maxWidth: 420,
+        maxWidth: 500,
         border: '1px solid black',
         my: 1
       }}

@@ -122,7 +122,7 @@ const UserMessageRoom: React.FC = () => {
         <Grid container justifyContent='center' sx={{ mt: 2 }}>
           <Avatar
             alt='avatar'
-            src={otherUser?.avatar || ''}
+            src={otherUser?.avatar.url || ''}
           />
           <Typography
             variant='h6'
