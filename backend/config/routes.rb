@@ -8,7 +8,11 @@ Rails.application.routes.draw do
         registrations: 'api/v1/auth/registrations'
       }
       namespace :auth do
-        resources :sessions, only: %i[index]
+        resources :sessions, only: %i[index] do
+          collection do
+            post :guest_login
+          end
+        end
       end
       resources :users, only: %i[index show]
       resources :bookmarks, only: %i[index create] do
