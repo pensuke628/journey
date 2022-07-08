@@ -178,7 +178,9 @@ export interface UserData {
   id: number
   name: string
   email: string
-  avatar: string
+  avatar: {
+    url: string
+  }
   profile: string
   backgroundImage: string
   provider: string

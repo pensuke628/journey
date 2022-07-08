@@ -107,7 +107,7 @@ const User: React.FC<UserData> = (props) => {
   return (
     <Card
       sx={{
-        maxWidth: 420,
+        // maxWidth: 500,
         border: '1px solid black',
         my: 1
       }}
@@ -118,12 +118,20 @@ const User: React.FC<UserData> = (props) => {
           props.backgroundImage ? props.backgroundImage : defaultBckgroundImage
         }
         alt='Image for user_background_image'
-        height='80'
+        height='100'
       />
       <CardContent>
         <Grid container>
-          <Grid item xs={6}>
-            <Avatar></Avatar>
+          <Grid item xs={12} sm={8} md={6} lg={6}>
+            <Avatar
+              alt='avatar'
+              src={props.avatar.url}
+              sx= {{
+                width: 56,
+                height: 56,
+                mt: -6
+              }}
+            />
             <Typography
               component={RouterLink}
               to={`/users/${props.id}`}
@@ -134,8 +142,12 @@ const User: React.FC<UserData> = (props) => {
               { props.profile }
             </Typography>
           </Grid>
-          <Grid item xs={6}>
-            <CardActions>
+          <Grid item xs={12} sm={4} md={6} lg={6}>
+            <CardActions
+              sx={{
+                justifyContent: 'center',
+              }}
+            >
               {
                 isSignedIn && !(currentUser?.id === props.id) ? (                
                   isFollowing ? (
