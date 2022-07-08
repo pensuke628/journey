@@ -49,6 +49,7 @@ const UserBookmarks: React.FC = () => {
             image={house.image.url}
             bookmark={onClick}
             unbookmark={() => handleDestroyBookmark(house)}
+            tags={house.tags}
           />
         );
       })}
