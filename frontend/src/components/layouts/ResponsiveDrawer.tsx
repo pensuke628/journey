@@ -46,7 +46,7 @@ import { Notification } from 'interfaces/index';
 import { AuthContext, NotificationContext } from 'App';
 
 // apiを叩く関数のimport
-import { signOut } from 'lib/api/auth';
+import { guestSignIn, signIn, signOut } from 'lib/api/auth';
 
 const drawerWidth = 240;
 
@@ -157,6 +157,30 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
         return 'white'
       } else {
         return 'yellow'
+      }
+    }
+    const handleGuestLogin = async() => {
+      try {
+        // ゲストユーザー用のアカウントを作成し、ログインする
+        const test = await guestSignIn();
+        if (test.status === 200) {
+          const data = {
+            email: test.data.email,
+            password: test.data.password
+          }
+          const res = await signIn(data);
+          if (res.status === 200) {
+            // ログインに成功した場合はCookieに各値を格納する
+            Cookies.set('_access_token', res.headers['access-token']);
+            Cookies.set('_client', res.headers['client']);
+            Cookies.set('_uid', res.headers['uid']);
+            
+            setIsSignedIn(true);
+            setCurrentUser(res.data.data);
+          }
+        }
+      } catch(error){
+        console.log(error);
       }
     }
 
@@ -367,6 +391,19 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
                    ログイン
                 </Typography>
                </Button>
+               <Button
+                  variant='contained'
+                  color='info'
+                  onClick={handleGuestLogin}
+                  sx={{
+                    mx: 1,
+                    borderRadius: '28px'
+                  }}
+               >
+                <Typography>
+                   ゲストログイン(閲覧用)
+                </Typography>
+               </Button>
             </Box>
             <Box
               sx = {{
@@ -411,6 +448,15 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
                     underline='none'
                   >
                       ログイン
+                  </Link>
+                </MenuItem>
+                <MenuItem onClick={handleCloseSignupMenu}>
+                  <Link
+                    color="inherit"
+                    underline='none'
+                    onClick={handleGuestLogin}
+                  >
+                      ゲストログイン（閲覧用）
                   </Link>
                 </MenuItem>
               </Menu>
