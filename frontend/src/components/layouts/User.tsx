@@ -122,7 +122,7 @@ const User: React.FC<UserData> = (props) => {
       />
       <CardContent>
         <Grid container>
-          <Grid item xs={9} md={7} lg={6}>
+          <Grid item xs={12} sm={8} md={6} lg={6}>
             <Avatar
               alt='avatar'
               src={props.avatar.url}
@@ -142,8 +142,12 @@ const User: React.FC<UserData> = (props) => {
               { props.profile }
             </Typography>
           </Grid>
-          <Grid item xs={3} md={5} lg={6}>
-            <CardActions>
+          <Grid item xs={12} sm={4} md={6} lg={6}>
+            <CardActions
+              sx={{
+                justifyContent: 'center',
+              }}
+            >
               {
                 isSignedIn && !(currentUser?.id === props.id) ? (                
                   isFollowing ? (
