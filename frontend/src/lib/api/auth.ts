@@ -36,3 +36,7 @@ export const getCurrentUser = () => {
     }
   })
 }
+
+export const guestSignIn = () => {
+  return client.post('auth/sessions/guest_login')
+}
