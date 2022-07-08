@@ -196,6 +196,7 @@ const Top: React.FC = () => {
                   image={house.image.url}
                   bookmark={() => handleCreateBookmark(house)}
                   unbookmark={() => handleDestroyBookmark(house)}
+                  tags={house.tags}
                 />
               );
             })

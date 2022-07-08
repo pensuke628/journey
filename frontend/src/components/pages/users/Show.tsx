@@ -84,7 +84,9 @@ const UserShow: React.FC = () => {
     id: 0,
     name: '',
     email: '',
-    avatar: '',
+    avatar: {
+      url: ''
+    },
     profile: '',
     backgroundImage: '',
     provider: '',
@@ -206,7 +208,7 @@ const UserShow: React.FC = () => {
                   <Grid item xs={12} md={7}>
                     <Avatar
                       alt='avatar'
-                      src={user.avatar}
+                      src={user.avatar.url}
                       sx= {{
                         width: 56,
                         height: 56,
@@ -339,7 +341,7 @@ const UserShow: React.FC = () => {
                       >
                         {
                           user.following.map((user: UserData) => (
-                            <Grid item xs={12} sm={4} key={user.id}>
+                            <Grid item xs={12} md={6} lg={4} key={user.id}>
                               <User
                                 id={user.id}
                                 name={user.name}
@@ -376,7 +378,7 @@ const UserShow: React.FC = () => {
                       >
                         {
                           user.followers.map((user: UserData) => (
-                            <Grid item xs={12} sm={4} key={user.id}>
+                            <Grid item xs={12} md={6} lg={4} key={user.id}>
                               <User
                                 id={user.id}
                                 name={user.name}

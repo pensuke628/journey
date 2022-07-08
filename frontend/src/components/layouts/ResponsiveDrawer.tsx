@@ -56,7 +56,7 @@ interface Props {
 
 const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
   const navigate = useNavigate();
-  const { loading, isSignedIn, setIsSignedIn, currentUser } = useContext(AuthContext);
+  const { loading, isSignedIn, setIsSignedIn, currentUser, setCurrentUser } = useContext(AuthContext);
   const { notifications, setNotifications } = useContext(NotificationContext);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [bottomMenuValue, setBottomMenuValue] = useState<number>(0);
@@ -171,6 +171,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
           Cookies.remove("_uid");
   
           setIsSignedIn(false);
+          setCurrentUser(undefined);
           navigate('/signin');
   
           console.log('ログアウトに成功しました');
@@ -531,32 +532,56 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
         }}
         elevation={3}
       >
-        <BottomNavigation
-          showLabels
-          value={bottomMenuValue}
-          onChange={(event, newValue) => {
-            setBottomMenuValue(newValue);
-          }}
-        >
-          <BottomNavigationAction
-            component={RouterLink}
-            to='/'
-            label='TOP'
-            icon={<HomeIcon />}
-          />
-          <BottomNavigationAction
-            component={RouterLink}
-            to='/signin'
-            label='ログイン'
-            icon={<LoginIcon />}
-          />
-          <BottomNavigationAction
-            component={RouterLink}
-            to='/signup'
-            label='新規登録'
-            icon={<AddIcon />}
-          />
-        </BottomNavigation>
+        { currentUser? (
+            <BottomNavigation
+              showLabels
+              value={bottomMenuValue}
+              onChange={(event, newValue) => {
+                setBottomMenuValue(newValue);
+              }}
+            >
+              <BottomNavigationAction
+                component={RouterLink}
+                to='/'
+                label='TOP'
+                icon={<HomeIcon />}
+              />
+              <BottomNavigationAction
+                component={RouterLink}
+                to={`/users/${currentUser?.id}`}
+                label='マイページ'
+                icon={<PersonIcon/>}
+              />
+            </BottomNavigation>
+          ) : (
+            <BottomNavigation
+              showLabels
+              value={bottomMenuValue}
+              onChange={(event, newValue) => {
+                setBottomMenuValue(newValue);
+              }}
+            >
+              <BottomNavigationAction
+                component={RouterLink}
+                to='/'
+                label='TOP'
+                icon={<HomeIcon />}
+              />
+              <BottomNavigationAction
+                component={RouterLink}
+                to='/signin'
+                label='ログイン'
+                icon={<LoginIcon />}
+              />
+              <BottomNavigationAction
+                component={RouterLink}
+                to='/signup'
+                label='新規登録'
+                icon={<AddIcon />}
+              />
+            </BottomNavigation>
+          )
+        }
       </Paper>
     </Box>
   );

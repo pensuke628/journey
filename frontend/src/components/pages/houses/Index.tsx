@@ -81,13 +81,17 @@ const Index: React.FC = () => {
     }
   }
 
+  const handleSetKeyword = (data: string) => {
+    setKeyword(data);
+  }
+
   useEffect(() => {
     handleTagSearch();
-  },[])
+  },[keyword])
 
   return (
     <>
-      <h1>ハウス一覧</h1>
+      <h1>タグ"{keyword}"のハウス検索結果</h1>
       {filteredHouses.map((house, index) => {
         return (
           <House
@@ -98,6 +102,8 @@ const Index: React.FC = () => {
             image={house.image.url}
             bookmark={() => handleCreateBookmark(house)}
             unbookmark={() => handleDestroyBookmark(house)}
+            tags={house.tags}
+            setState={handleSetKeyword}
           />
         );
       })}
