@@ -2,7 +2,10 @@
 ## アプリの概要
 ゲストハウスやライダーハウス（主に自転車やバイクなどの二輪車で旅する旅行者向け宿泊施設）の情報を共有するサービスです。
 
+Ruby on Rails(API) + React(SPA) + Docker + ECS(Fargate) + CircleCI を使用しており、レスポンシブ対応もしているので、スマホ、PCどちらからでもご確認いただけます。
+
 https://journey-enjoy.com
+
 ## 使用技術一覧
 ◆フロントエンド
   * HTML/CSS/JavaScript
