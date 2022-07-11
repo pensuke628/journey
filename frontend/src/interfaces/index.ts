@@ -168,12 +168,19 @@ export interface Tag {
   updatedAt: Date
 }
 
+// タグ検索時のinterface
+export interface TagSearch {
+  name: string
+}
+
 // ユーザー
 export interface UserData {
   id: number
   name: string
   email: string
-  avatar: string
+  avatar: {
+    url: string
+  }
   profile: string
   backgroundImage: string
   provider: string

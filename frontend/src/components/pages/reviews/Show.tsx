@@ -25,6 +25,8 @@ import InfoIcon from '@mui/icons-material/Info';
 import MessageIcon from '@mui/icons-material/Message';
 import ReplyIcon from '@mui/icons-material/Reply';
 
+import CustomTag from 'components/utils/Tag';
+
 // ReactHooksFormのimport
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -109,7 +111,7 @@ const ReviewShow: React.FC = () => {
     try {
       const res = await getReview(query.id);
       if (res.status === 200) {
-        console.log(res.data);
+        // console.log(res.data);
         setReview(res.data);
         setReviewComments(res.data.comments);
         setReviewImages(res.data.images);
@@ -255,6 +257,11 @@ const ReviewShow: React.FC = () => {
     }
   }
 
+  const handleTagSearch = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const keyword = event.currentTarget.value;
+    navigate('/reviews/search', { state: keyword });
+  };
+
   useEffect(() => {
     fetch();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -266,8 +273,6 @@ const ReviewShow: React.FC = () => {
     let month: string = (1 + newdate.getMonth()).toString();
     return `${year}年${month}月`
   }
-
-  console.log(reviewImages);
 
   return (
     <>
@@ -337,9 +342,13 @@ const ReviewShow: React.FC = () => {
                   {
                     review.tags?.map((tag) => {
                       return (
-                        <Typography key={tag.id}>
-                          #{ tag.name }
-                        </Typography>
+                        <CustomTag
+                          key={tag.id}
+                          text={tag.name}
+                          onClick={(event)=> {
+                            handleTagSearch(event);
+                          }}
+                        />
                       )
                     })
                   }

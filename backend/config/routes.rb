@@ -8,7 +8,11 @@ Rails.application.routes.draw do
         registrations: 'api/v1/auth/registrations'
       }
       namespace :auth do
-        resources :sessions, only: %i[index]
+        resources :sessions, only: %i[index] do
+          collection do
+            post :guest_login
+          end
+        end
       end
       resources :users, only: %i[index show]
       resources :bookmarks, only: %i[index create] do
@@ -42,6 +46,8 @@ Rails.application.routes.draw do
         end
       end
       resources :reviews, only: %i[create show update destroy]
+      get 'tags/searchhouses', to: 'tags#searchhouses'
+      get 'tags/searchreviews', to: 'tags#searchreviews'
     end
   end
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
