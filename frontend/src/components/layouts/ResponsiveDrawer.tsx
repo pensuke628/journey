@@ -55,6 +55,7 @@ interface Props {
 }
 
 const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
+  
   const navigate = useNavigate();
   const { loading, isSignedIn, setIsSignedIn, currentUser, setCurrentUser } = useContext(AuthContext);
   const { notifications, setNotifications } = useContext(NotificationContext);
@@ -80,7 +81,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
           }}
         >
           <img
-            src='logo.png'
+            src={`${process.env.PUBLIC_URL}/logo.png`}
             height='100'
           />
         </Link>
@@ -516,7 +517,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
               }}
             >
               <img
-                src='logo.png'
+                src={`${process.env.PUBLIC_URL}/logo.png`}
                 height='100'
               />
             </Link>
