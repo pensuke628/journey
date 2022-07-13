@@ -14,7 +14,7 @@ Rails.application.routes.draw do
           end
         end
       end
-      resources :users, only: %i[index show]
+      resources :users, only: %i[index show update]
       resources :bookmarks, only: %i[index create] do
         collection do
           delete :destroy
