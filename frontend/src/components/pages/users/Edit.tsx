@@ -321,6 +321,7 @@ const UserEdit: React.FC = () => {
                         <Input accept="image/*" id='bgimage-upload-button' multiple type='file' onChange={handleBackgroundImageFile}/>
                         <Button
                           variant='contained'
+                          component='span'
                         >
                           背景を更新する
                         </Button>
