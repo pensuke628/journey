@@ -6,6 +6,7 @@ class User < ApplicationRecord
   include DeviseTokenAuth::Concerns::User
 
   mount_uploader :avatar, AvatarUploader
+  mount_uploader :background_image, ImageUploader
 
   # validation
   validates :name, presence: true

@@ -182,7 +182,9 @@ export interface UserData {
     url: string
   }
   profile: string
-  backgroundImage: string
+  backgroundImage: {
+    url: string
+  }
   provider: string
   uid: string
   allowPasswordChange: boolean
@@ -192,4 +194,17 @@ export interface UserData {
   likes: ReviewData[]
   following: UserData[]
   followers: UserData[]
+}
+
+export interface UserUpdateParams {
+  id: number
+  name: string
+  email: string
+  avatar: {
+    url: string
+  }
+  profile: string
+  backgroundImage: {
+    url: string
+  } 
 }
