@@ -245,7 +245,7 @@ const Top: React.FC = () => {
                 </Card>
               </Grid>
             </Grid>
-            <Card variant='outlined'>
+            {/* <Card variant='outlined'>
               <CardContent>
                 <Typography>
                   ライダーハウス・ゲストハウスの管理者様へ
@@ -273,7 +273,7 @@ const Top: React.FC = () => {
                   )
                 }
               </CardContent>
-            </Card>
+            </Card> */}
           </>
         )    
       }      
