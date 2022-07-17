@@ -24,7 +24,8 @@ class Api::V1::HousesController < ApplicationController
   end
 
   def update
-    if @owner_auth && @house.update!(house_params)
+    # if @owner_auth && @house.update!(house_params)
+    if @house.update!(house_params)
       @house.save_tag(@tag_list)
       response_success(:house, :update)
     else
