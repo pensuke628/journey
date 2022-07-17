@@ -69,7 +69,25 @@ const ReviewShow: React.FC = () => {
     content: '',
     date: new Date(),
     evaluation: 0,
-    userId: 0,
+    user: {
+      id: 0,
+      name: '',
+      email: '',
+      avatar: {
+        url: ''
+      },
+      profile: '',
+      backgroundImage: {
+        url: ''
+      },
+      provider: '',
+      uid: '',
+      allowPasswordChange: true,
+      reviews: [],
+      likes: [],
+      following: [],
+      followers: [],
+    },
     houseId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
