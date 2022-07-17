@@ -327,7 +327,7 @@ const UserShow: React.FC = () => {
                             content={review.content}
                             date={review.date}
                             evaluation={review.evaluation}
-                            userId={review.userId}
+                            user={user}
                             tags={review.tags}
                             setState={DummyFuction}
                           />

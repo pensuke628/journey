@@ -6,6 +6,7 @@ class ReviewSerializer < ActiveModel::Serializer
              :user_id,
              :house_id
 
+  belongs_to :user
   has_many :comments
   has_many :tags
   has_many :images
