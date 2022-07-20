@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams, useNavigate, } from "react-router-dom";
+import { Link as RouterLink, useParams, useNavigate, } from "react-router-dom";
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -336,6 +336,8 @@ const ReviewShow: React.FC = () => {
               <CardHeader
                 avatar={
                   <Avatar
+                    component={RouterLink}
+                    to={`/users/${review.user.id}`}
                     src={review.user.avatar.url}
                   />
                 }
