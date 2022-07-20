@@ -46,7 +46,6 @@ class Api::V1::RelationshipsController < ApplicationController
         )
         @is_mutual = true
       end
-      response_success(:relationship, :create)
       render status: :ok, json: { status: 200, message: 'Success Relationship create', is_mutual: @is_mutual }
     else
       response_internal_server_error
