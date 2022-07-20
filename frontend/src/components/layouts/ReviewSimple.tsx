@@ -20,7 +20,7 @@ import MessageIcon from '@mui/icons-material/Message';
 import CustomTag from 'components/utils/Tag';
 
 // interfaceのimport
-import { Notification, ReviewData, Tag } from 'interfaces/index';
+import { Notification, ReviewData, Tag, UserData } from 'interfaces/index';
 
 //  Contextのimport
 import { AuthContext, LikeContext } from 'App';
@@ -34,7 +34,7 @@ type Props = {
   content: string
   date: Date
   evaluation: number | null
-  userId: number
+  user: UserData
   tags: Tag[] | undefined
   setState: Function
 }
@@ -69,7 +69,7 @@ const ReviewSimple: React.FC<Props> = (props) => {
 
     const notificationParams: Notification = {
       senderId: currentUser?.id,
-      receiverId: props.userId,
+      receiverId: props.user.id,
       reviewId: props.id,
       commentId: undefined,
       messageId: undefined,
@@ -134,17 +134,20 @@ const ReviewSimple: React.FC<Props> = (props) => {
     >
       <CardHeader
         avatar={
-          <Avatar>
-            R
-          </Avatar>
+          <Avatar
+            component={RouterLink}
+            to={`/users/${props.user.id}`}
+            src={props.user.avatar.url}
+          />
         }
-        title='ユーザー名を表示させる予定'
+        title={`${props.user.name}さん`}
         subheader={`${viewDate(props.date)}訪問`}
       />
       <CardContent>
-        <Box sx={{
-          display: 'flex',
-          flexDirection: 'column'
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
           <Rating
@@ -154,6 +157,10 @@ const ReviewSimple: React.FC<Props> = (props) => {
           <Typography
             component={RouterLink}
             to={`/reviews/${props.id}`}
+            sx={{
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
           >
             {props.content}
           </Typography>

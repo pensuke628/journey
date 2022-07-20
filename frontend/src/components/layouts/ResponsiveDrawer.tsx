@@ -55,6 +55,7 @@ interface Props {
 }
 
 const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
+  
   const navigate = useNavigate();
   const { loading, isSignedIn, setIsSignedIn, currentUser, setCurrentUser } = useContext(AuthContext);
   const { notifications, setNotifications } = useContext(NotificationContext);
@@ -80,7 +81,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
           }}
         >
           <img
-            src='logo.png'
+            src={`${process.env.PUBLIC_URL}/logo.png`}
             height='100'
           />
         </Link>
@@ -213,9 +214,9 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
         return (
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title='notifications'>
-              <IconButton onClick={handleOpenNotifications} sx={{ p: 2 }}>
+              <IconButton onClick={handleOpenNotifications} sx={{ p: 2, m:2  }}>
                 <Badge badgeContent={noCheckNotificationCount} color='error'>
-                  <NotificationsIcon sx={{ color: '#fff' }}/>
+                  <NotificationsIcon/>
                 </Badge>
               </IconButton>
             </Tooltip>
@@ -297,7 +298,9 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
             </Menu>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar
+                  src={`${currentUser?.avatar.url}`}
+                />
               </IconButton>
             </Tooltip>
             <Menu
@@ -316,35 +319,36 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={handleCloseUserMenu}>
-                <IconButton
-                  component={RouterLink}
-                  to={`/users/${currentUser?.id}/message_rooms`}
-                >
+              <MenuItem
+                component={RouterLink}
+                to={`/users/${currentUser?.id}/message_rooms`}
+                onClick={handleCloseUserMenu}
+              >
+                <ListItemIcon>
                   <Badge badgeContent={1} color='error'>
                     <MailIcon/>
                   </Badge>
-                  <Typography>メッセージ</Typography>
-                </IconButton>
+                </ListItemIcon>
+                <ListItemText>メッセージ</ListItemText>
               </MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>
-                <IconButton
-                  component={RouterLink}
-                  to={`/users/${currentUser?.id}`}
-                  color="inherit"
-                >
+              <MenuItem
+                component={RouterLink}
+                to={`/users/${currentUser?.id}`}
+                onClick={handleCloseUserMenu}
+              >
+                <ListItemIcon>
                   <PersonIcon/>
-                  <Typography>マイページ</Typography>
-                </IconButton>
+                </ListItemIcon>
+                <ListItemText>マイページ</ListItemText>
               </MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>
-                <IconButton
-                  color="inherit"
-                  onClick={handleSignOut}
-                >
+              <MenuItem
+                component={Button}
+                onClick={handleSignOut}
+              >
+                <ListItemIcon>
                   <LogoutIcon/>
-                  <Typography>ログアウト</Typography>
-                </IconButton>
+                </ListItemIcon>
+                <ListItemText>ログアウト</ListItemText>
               </MenuItem>
             </Menu>
           </Box>
@@ -516,7 +520,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
               }}
             >
               <img
-                src='logo.png'
+                src={`${process.env.PUBLIC_URL}/logo.png`}
                 height='100'
               />
             </Link>

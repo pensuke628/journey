@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams, Link as RouterLink } from 'react-router-dom';
+import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
 
 // MUIのimport
 import { styled } from '@mui/material/styles';
@@ -88,7 +88,9 @@ const UserShow: React.FC = () => {
       url: ''
     },
     profile: '',
-    backgroundImage: '',
+    backgroundImage: {
+      url: ''
+    },
     provider: '',
     uid: '',
     allowPasswordChange: true,
@@ -105,6 +107,8 @@ const UserShow: React.FC = () => {
   const [user, setUser] = useState<UserData>(DummyUser);
   const [userIsTrue, setUserIsTrue] = useState<boolean>(false);
   const [tab, setTab] = useState(0);
+
+  const navigate = useNavigate();
   
   const getData = async() => {
     try {
@@ -177,6 +181,10 @@ const UserShow: React.FC = () => {
     }
   }
 
+  const editUser = () => {
+    navigate(`/users/${user.id}/edit`, { state: {...user}})
+  }
+
   const tabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
   };
@@ -194,9 +202,9 @@ const UserShow: React.FC = () => {
               <CardMedia
                 component='img'
                 image={
-                  user.backgroundImage ? user.backgroundImage : defaultBckgroundImage
+                  user.backgroundImage.url ? user.backgroundImage.url : defaultBckgroundImage
                 }
-                alt='背景画像を表示する予定です'
+                alt='背景画像'
                 height='300px'
               />
               <CardContent>
@@ -269,6 +277,7 @@ const UserShow: React.FC = () => {
                               variant="contained"
                               startIcon={<EditIcon />}
                               style={styles.actionbutton}
+                              onClick={editUser}
                             >
                               プロフィール編集
                             </Button>
@@ -318,7 +327,7 @@ const UserShow: React.FC = () => {
                             content={review.content}
                             date={review.date}
                             evaluation={review.evaluation}
-                            userId={review.userId}
+                            user={user}
                             tags={review.tags}
                             setState={DummyFuction}
                           />

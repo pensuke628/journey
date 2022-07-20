@@ -5,6 +5,7 @@ class Review < ApplicationRecord
   validates :user_id, :house_id, presence: true
   # scope
   scope :order_new, -> { order(created_at: :desc) }
+  scope :visit_new, -> { order(date: :desc) }
   # association
   belongs_to :user
   belongs_to :house

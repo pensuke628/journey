@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 // MUIのimport
+import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -21,6 +22,8 @@ import KyushuMap from '../../images/KyushuMap.png';
 type Props = {
   handleClick:(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
+
+
 
 const Tohoku: string[] = ['青森', '秋田', '岩手', '山形', '宮城', '福島'];
 const Kanto: string[] = ['茨城', '栃木', '群馬', '千葉', '埼玉', '東京', '神奈川'];
@@ -47,6 +50,17 @@ const JapanMapComponent = (props: Props) => {
         </Typography>
       </Button>
     );
+  }
+
+  const AreaTitle = (props: {text: string}) => {
+    return (
+      <Typography
+        variant='h6'
+        fontWeight='bold'
+      >
+        {props.text}
+      </Typography>
+    )
   }
 
 
@@ -676,11 +690,11 @@ const JapanMapComponent = (props: Props) => {
         }}
       >
         <Box>
-          <Typography>北海道</Typography>
+          <AreaTitle text='北海道'/>
           <PrefectureListButton text='北海道'/>
         </Box>
         <Box>
-          <Typography>東北</Typography>
+          <AreaTitle text='東北'/>
           <Box>
           {
             Tohoku.map((pref, index) => {
@@ -695,7 +709,7 @@ const JapanMapComponent = (props: Props) => {
           </Box>
         </Box>
         <Box>
-          <Typography>関東</Typography>
+          <AreaTitle text='関東'/>
           {
             Kanto.map((pref, index) => {
               return (
@@ -708,7 +722,7 @@ const JapanMapComponent = (props: Props) => {
           }
         </Box>
         <Box>
-          <Typography>中部</Typography>
+          <AreaTitle text='中部'/>
           {
             Chubu.map((pref, index) => {
               return (
@@ -721,7 +735,7 @@ const JapanMapComponent = (props: Props) => {
           }
         </Box>
         <Box>
-          <Typography>近畿</Typography>
+          <AreaTitle text='近畿'/>
           {
             Kinki.map((pref, index) => {
               return (
@@ -734,7 +748,7 @@ const JapanMapComponent = (props: Props) => {
           }
         </Box>
         <Box>
-          <Typography>中国</Typography>
+          <AreaTitle text='中国'/>
           {
             Chugoku.map((pref, index) => {
               return (
@@ -747,7 +761,7 @@ const JapanMapComponent = (props: Props) => {
           }
         </Box>
         <Box>
-          <Typography>四国</Typography>
+          <AreaTitle text='四国'/>
           {
             Shikoku.map((pref, index) => {
               return (
@@ -760,7 +774,7 @@ const JapanMapComponent = (props: Props) => {
           }
         </Box>
         <Box>
-          <Typography>九州</Typography>
+        <AreaTitle text='九州'/>
           {
             Kyushu.map((pref, index) => {
               return (
@@ -773,7 +787,7 @@ const JapanMapComponent = (props: Props) => {
           }
         </Box>
         <Box>
-          <Typography>沖縄</Typography>
+          <AreaTitle text='沖縄'/>
           <PrefectureListButton text='沖縄'/>
         </Box>
       </Box>

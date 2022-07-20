@@ -6,6 +6,7 @@ import SignIn from 'components/pages/SignIn';
 import SignUp from 'components/pages/SignUp';
 import PasswordReset from 'components/pages/PasswordReset';
 import UserBookmarks from 'components/pages/users/Bookmarks';
+import UserEdit from 'components/pages/users/Edit';
 import UserIndex from 'components/pages/users/Index';
 import UserMessageRooms from 'components/pages/users/MessageRooms';
 import UserShow from 'components/pages/users/Show';
@@ -41,6 +42,7 @@ const Routing: React.FC = () => {
           <Route path=':id'>
             <Route index element={<UserShow/>}/>
             <Route path='bookmarks' element={<UserBookmarks/>}/>
+            <Route path='edit' element={<UserEdit/>}/>
             <Route path='message_rooms' element={<UserMessageRooms/>}/>
             <Route path='owners' element={<OwnerIndex/>}/>
           </Route>

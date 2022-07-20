@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -49,6 +49,8 @@ import { Image, Notification, ReviewParams, ReviewData, Tag } from 'interfaces/i
 
 // バリデーションルールのimport
 import { ReviewSchema } from 'schema/review';
+
+import { AuthContext } from 'App';
 
 // apiを叩く関数のimport
 import { followerNotification } from 'lib/api/notification';
@@ -158,18 +160,19 @@ const HouseDetail: React.FC<Props> = (props) => {
     reset,
     formState: { errors },
   } = useForm<ReviewParams>({
-    // defaultValues: { evaluation: 2.5 },
+    defaultValues: { tags: [''] },
     resolver: yupResolver(ReviewSchema),
   });
   const navigate = useNavigate();
 
-  // const [loading, setLoading] = useState<boolean>(true);
+  const { currentUser } = useContext(AuthContext);
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [images, setImages] = useState<File[]>([]);
   const [houseImages, setHouseImages] = useState<Image[]>([]);
   const [reviewFormOpen, setReviewFormOpen] = useState(false);
   const [tab, setTab] = useState(0);
+  const [reviewAverageScore, setReviewAverageScore] = useState<number>(0);
 
   const tabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
@@ -239,6 +242,13 @@ const HouseDetail: React.FC<Props> = (props) => {
     navigate('/houses', { state: keyword });
   };
 
+  const reviewEvaluationAverage = () => {
+    const reviewEvaluationSum: number = reviews.reduce((sum, review) => sum + review.evaluation,0);
+    const reviewCountExpectNull: number = reviews.filter((review) => review.evaluation !== null).length
+    const reviewAverage: number = reviewEvaluationSum / reviewCountExpectNull;
+    setReviewAverageScore(reviewAverage);
+  }
+
   const DummyFuction = () => {
     console.log('');
   }
@@ -247,6 +257,7 @@ const HouseDetail: React.FC<Props> = (props) => {
     setReviews(props.reviews);
     setTags(props.tags);
     setHouseImages(props.houseImages);
+    reviewEvaluationAverage();
   },[props.reviews]);
 
   const address: string = `${props.prefectures}`.concat(`${props.municipalities}`);
@@ -296,46 +307,53 @@ const HouseDetail: React.FC<Props> = (props) => {
           spacing={1}
           justifyContent='space-evenly'
         >
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={10} md={4}>
             <CardMedia
               component='img'
               image={props.image.url}
               alt='Image for house'
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={4} md={3}>
             <Box>
-              <Typography>★★★☆☆</Typography>
+              <Rating
+                value={reviewAverageScore}
+                precision={0.1}
+                readOnly
+              />
               <Typography>口コミ {props.reviews.length}件</Typography>
             </Box>
           </Grid>
-          <Grid item xs={6} sm={2}>
-            <FlexBox sx={{ flexDirection: 'column' }}>
-              <Button
-                variant="contained"
-                startIcon={<PostAddIcon/>}
-                onClick={handleReviewOpen}
-                sx = {{ my:1 }}
-              >
-                投稿
-              </Button>
-              {
-                props.isBookmarked ? (
-                  <UnbookmarkButton onClick={props.bookmark}/>
-                ) : ( 
-                  <BookmarkButton onClick={props.bookmark}/>
-                )
-              }
-              <Button
-                variant="contained"
-                startIcon={<EditIcon/>}
-                onClick={props.editHouse}
-                sx = {{ my:1 }}
-              >
-                編集
-              </Button>
-            </FlexBox>
-          </Grid>
+          { currentUser ? (
+            <Grid item xs={6} sm={4} md={3}>
+              <FlexBox sx={{ flexDirection: 'column' }}>
+                <Button
+                  variant="contained"
+                  startIcon={<PostAddIcon/>}
+                  onClick={handleReviewOpen}
+                  sx = {{ my:1 }}
+                >
+                  投稿
+                </Button>
+                {
+                  props.isBookmarked ? (
+                    <UnbookmarkButton onClick={props.bookmark}/>
+                  ) : ( 
+                    <BookmarkButton onClick={props.bookmark}/>
+                  )
+                }
+                <Button
+                  variant="contained"
+                  startIcon={<EditIcon/>}
+                  onClick={props.editHouse}
+                  sx = {{ my:1 }}
+                >
+                  編集
+                </Button>
+              </FlexBox>
+            </Grid>
+            ) : (null)
+          }
         </Grid>
         <LocalizationProvider
            dateAdapter={AdapterDateFns}
@@ -377,6 +395,7 @@ const HouseDetail: React.FC<Props> = (props) => {
                       placeholder='タグ'
                       error={"tags" in errors}
                       helperText='複数タグを紐付けたい場合は、半角スペースで区切ってください'
+                      sx={{ my:1 }}
                     />
                   )}
                 />
@@ -388,12 +407,12 @@ const HouseDetail: React.FC<Props> = (props) => {
                 <FlexBox>
                   <Typography>評価</Typography>
                   <Controller
-                    // consoleにwarningが出る。後日修正する。
                     name='evaluation'
                     control={control}
-                    render={({ field }) => (
+                    render={(props) => (
                       <Rating
-                        {...field}
+                        onChange={props.field.onChange}
+                        value={Number(props.field.value)}
                         name='rating'
                         precision={0.5}
                       />
@@ -518,7 +537,7 @@ const HouseDetail: React.FC<Props> = (props) => {
                     id={review.id}
                     content={review.content}
                     date={review.date}
-                    userId={review.userId}
+                    user={review.user}
                     evaluation={review.evaluation}
                     tags={review.tags}
                     setState={DummyFuction}
