@@ -46,7 +46,7 @@ import { Notification } from 'interfaces/index';
 import { AuthContext, NotificationContext } from 'App';
 
 // apiを叩く関数のimport
-import { guestSignIn, signIn, signOut } from 'lib/api/auth';
+import { signIn, signOut } from 'lib/api/auth';
 
 const drawerWidth = 240;
 
@@ -161,24 +161,22 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
       }
     }
     const handleGuestLogin = async() => {
+      // ゲストユーザー用のアカウントとして、ログインする
       try {
-        // ゲストユーザー用のアカウントを作成し、ログインする
-        const test = await guestSignIn();
-        if (test.status === 200) {
-          const data = {
-            email: test.data.email,
-            password: test.data.password
-          }
-          const res = await signIn(data);
-          if (res.status === 200) {
-            // ログインに成功した場合はCookieに各値を格納する
-            Cookies.set('_access_token', res.headers['access-token']);
-            Cookies.set('_client', res.headers['client']);
-            Cookies.set('_uid', res.headers['uid']);
-            
-            setIsSignedIn(true);
-            setCurrentUser(res.data.data);
-          }
+        const guestLoginData = {
+          email: 'guest_user@example.com',
+          password:  process.env.REACT_APP_GUESTPASSWORD
+        }
+        const res = await signIn(guestLoginData);
+        if (res.status === 200) {
+          // ログインに成功した場合はCookieに各値を格納する
+          Cookies.set('_access_token', res.headers['access-token']);
+          Cookies.set('_client', res.headers['client']);
+          Cookies.set('_uid', res.headers['uid']);
+          
+          setIsSignedIn(true);
+          setCurrentUser(res.data.data);
+          navigate('/');
         }
       } catch(error){
         console.log(error);
