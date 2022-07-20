@@ -202,9 +202,9 @@ const UserShow: React.FC = () => {
               <CardMedia
                 component='img'
                 image={
-                  user.backgroundImage ? user.backgroundImage.url : defaultBckgroundImage
+                  user.backgroundImage.url ? user.backgroundImage.url : defaultBckgroundImage
                 }
-                alt='背景画像を表示する予定です'
+                alt='背景画像'
                 height='300px'
               />
               <CardContent>
@@ -327,7 +327,7 @@ const UserShow: React.FC = () => {
                             content={review.content}
                             date={review.date}
                             evaluation={review.evaluation}
-                            userId={review.userId}
+                            user={user}
                             tags={review.tags}
                             setState={DummyFuction}
                           />

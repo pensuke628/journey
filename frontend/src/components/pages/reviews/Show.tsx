@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams, useNavigate, } from "react-router-dom";
+import { Link as RouterLink, useParams, useNavigate, } from "react-router-dom";
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -69,7 +69,25 @@ const ReviewShow: React.FC = () => {
     content: '',
     date: new Date(),
     evaluation: 0,
-    userId: 0,
+    user: {
+      id: 0,
+      name: '',
+      email: '',
+      avatar: {
+        url: ''
+      },
+      profile: '',
+      backgroundImage: {
+        url: ''
+      },
+      provider: '',
+      uid: '',
+      allowPasswordChange: true,
+      reviews: [],
+      likes: [],
+      following: [],
+      followers: [],
+    },
     houseId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -111,7 +129,7 @@ const ReviewShow: React.FC = () => {
     try {
       const res = await getReview(query.id);
       if (res.status === 200) {
-        // console.log(res.data);
+        console.log(res.data);
         setReview(res.data);
         setReviewComments(res.data.comments);
         setReviewImages(res.data.images);
@@ -317,11 +335,13 @@ const ReviewShow: React.FC = () => {
             <Card>
               <CardHeader
                 avatar={
-                  <Avatar>
-                    R
-                  </Avatar>
+                  <Avatar
+                    component={RouterLink}
+                    to={`/users/${review.user.id}`}
+                    src={review.user.avatar.url}
+                  />
                 }
-                title='ユーザー名を表示させる予定'
+                title={`${review.user.name}さん`}
                 subheader={`${viewDate(review.date)}訪問`}
               />
               <CardContent>

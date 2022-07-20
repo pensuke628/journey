@@ -8,7 +8,9 @@ class UserSerializer < ActiveModel::Serializer
              :provider,
              :uid
 
-  has_many :reviews
+  has_many :reviews, serializer: ReviewSerializer do
+    object.reviews.visit_new
+  end
   has_many :following
   has_many :followers
 end
