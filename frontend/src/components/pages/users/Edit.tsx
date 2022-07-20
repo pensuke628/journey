@@ -287,7 +287,7 @@ const UserEdit: React.FC = () => {
                         />
                       </ImageListItem>
                     );
-                  } else if (user.backgroundImage) {
+                  } else if (user.backgroundImage.url) {
                     // 背景設定済みかつ背景を更新しない場合
                     return (
                       <ImageListItem>

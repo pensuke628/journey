@@ -9,7 +9,7 @@ class UserSerializer < ActiveModel::Serializer
              :uid
 
   has_many :reviews, serializer: ReviewSerializer do
-    object.reviews.order_new
+    object.reviews.visit_new
   end
   has_many :following
   has_many :followers

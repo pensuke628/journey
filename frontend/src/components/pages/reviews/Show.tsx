@@ -129,7 +129,7 @@ const ReviewShow: React.FC = () => {
     try {
       const res = await getReview(query.id);
       if (res.status === 200) {
-        // console.log(res.data);
+        console.log(res.data);
         setReview(res.data);
         setReviewComments(res.data.comments);
         setReviewImages(res.data.images);
@@ -335,11 +335,11 @@ const ReviewShow: React.FC = () => {
             <Card>
               <CardHeader
                 avatar={
-                  <Avatar>
-                    R
-                  </Avatar>
+                  <Avatar
+                    src={review.user.avatar.url}
+                  />
                 }
-                title='ユーザー名を表示させる予定'
+                title={`${review.user.name}さん`}
                 subheader={`${viewDate(review.date)}訪問`}
               />
               <CardContent>
