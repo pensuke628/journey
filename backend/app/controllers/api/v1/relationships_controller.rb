@@ -20,7 +20,33 @@ class Api::V1::RelationshipsController < ApplicationController
     if user == other
       response_bad_request
     elsif follow.save
-      response_success(:relationship, :create)
+      # 相互フォローしているかどうかのフラグ
+      @is_mutual = false
+
+      active_follow = Relationship.find_or_initialize_by(follow_params)
+      passive_follow = Relationship.find_by(
+        follower_id: active_follow.followed_id,
+        followed_id: active_follow.follower_id
+      )
+
+      # 相手からのフォローが存在していれば、メッセージを送れるようになる
+      if passive_follow
+
+        # メッセージやりとりする部屋を作成する
+        message_room = MessageRoom.create
+
+        MessageRoomUser.find_or_create_by(
+          user_id: active_follow.follower_id,
+          message_room_id: message_room.id
+        )
+
+        MessageRoomUser.find_or_create_by(
+          user_id: passive_follow.follower_id,
+          message_room_id: message_room.id
+        )
+        @is_mutual = true
+      end
+      render status: :ok, json: { status: 200, message: 'Success Relationship create', is_mutual: @is_mutual }
     else
       response_internal_server_error
     end
