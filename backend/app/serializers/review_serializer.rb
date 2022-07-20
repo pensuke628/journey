@@ -3,7 +3,6 @@ class ReviewSerializer < ActiveModel::Serializer
              :content,
              :date,
              :evaluation,
-             :user_id,
              :house_id
 
   belongs_to :user
