@@ -26,7 +26,7 @@ RSpec.describe 'Api::V1::Relationships', type: :request do
 
       it 'フォロワーのユーザーIDが1件返ってくること' do
         get api_v1_relationships_url, headers: auth_headers
-        expect(json['active_relationships']).to include user2.id
+        expect(json['active_relationships'].size).to eq 1
       end
     end
   end

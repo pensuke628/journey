@@ -4,9 +4,9 @@ class Api::V1::RelationshipsController < ApplicationController
   def index
     render json: {
       status: 200,
-      active_relationships: current_api_v1_user.following.ids,
+      active_relationships: current_api_v1_user.following,
       # 自分がフォローしているユーザー
-      passive_relationships: current_api_v1_user.followers.ids
+      passive_relationships: current_api_v1_user.followers
       # 自分がフォローされているユーザー
     }
   end
