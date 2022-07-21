@@ -138,7 +138,7 @@ export interface ReviewData {
   content: string
   date: Date
   user: UserData
-  houseId: number
+  house: HouseData
   evaluation: number
   createdAt: Date
   updatedAt: Date

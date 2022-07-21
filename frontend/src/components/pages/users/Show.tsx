@@ -201,11 +201,6 @@ const UserShow: React.FC = () => {
     console.log('');
   }
 
-  console.log(
-    (followingUsers.some(member => member.id === user.id)) && 
-    (user.following.some(member => member.id === currentUser?.id))
-  )
-
   return (
     <>
       { userIsTrue && user ? (
@@ -346,6 +341,7 @@ const UserShow: React.FC = () => {
                             date={review.date}
                             evaluation={review.evaluation}
                             user={user}
+                            house={review.house}
                             tags={review.tags}
                             setState={DummyFuction}
                           />
