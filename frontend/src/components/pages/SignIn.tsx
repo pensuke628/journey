@@ -26,11 +26,12 @@ import { useForm, Controller } from 'react-hook-form';
 import { SignInParams } from 'interfaces/index';
 
 // Contextのimport
-import { AuthContext, BookmarkContext, LikeContext, NotificationContext, OwnerContext } from 'App';
+import { AuthContext, BookmarkContext, LikeContext, NotificationContext, RelationshipContext ,OwnerContext } from 'App';
 
 // APIを叩く関数のimport
 import {signIn} from 'lib/api/auth';
 import { getBookmark } from 'lib/api/bookmark';
+import { getFollowing } from 'lib/api/relationships';
 import { getLike } from 'lib/api/like';
 import { getNotifications } from 'lib/api/notification';
 import { getOwners } from 'lib/api/owner';
@@ -59,6 +60,7 @@ const SignIn: React.FC = () => {
 
   const { setIsSignedIn, setCurrentUser } = useContext(AuthContext);
   const { setBookmarkingHouses } = useContext(BookmarkContext);
+  const { setFollowingUsers } = useContext(RelationshipContext);
   const { setLikingReviews } = useContext(LikeContext);
   const { setNotifications } = useContext(NotificationContext);
   const { setOwneredHouses } = useContext(OwnerContext);
@@ -76,22 +78,24 @@ const SignIn: React.FC = () => {
         setIsSignedIn(true);
         setCurrentUser(res.data.data);
 
+        // フォローしているユーザーを保存する
+        const following = await getFollowing();
+        setFollowingUsers([...following.data.activeRelationships]);
+
+        // いいねした投稿を保存する
         const like = await getLike();
-        console.log(like);
         setLikingReviews([...like.data.likeReviews]);
 
         // お気に入りしている施設を保存する
         const bookmark = await getBookmark();
-        console.log(bookmark);
         setBookmarkingHouses([...bookmark.data.bookmarkHouses]);
 
+        // 自分宛の通知を保存する
         const notification = await getNotifications();
-        console.log(notification);
         setNotifications([...notification.data.notifications]);
 
         // 管理者である施設を保存する
         const owner = await getOwners();
-        console.log(owner);
         setOwneredHouses([...owner.data.ownerHouses]);
 
         navigate('/');

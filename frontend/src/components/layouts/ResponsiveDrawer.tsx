@@ -43,7 +43,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { Notification } from 'interfaces/index';
 
 //  Contextのimport
-import { AuthContext, NotificationContext } from 'App';
+import { AuthContext, BookmarkContext, LikeContext ,NotificationContext, OwnerContext ,RelationshipContext } from 'App';
 
 // apiを叩く関数のimport
 import { signIn, signOut } from 'lib/api/auth';
@@ -58,7 +58,11 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
   
   const navigate = useNavigate();
   const { loading, isSignedIn, setIsSignedIn, currentUser, setCurrentUser } = useContext(AuthContext);
+  const { setBookmarkingHouses } = useContext(BookmarkContext);
+  const { setFollowingUsers } = useContext(RelationshipContext);
   const { notifications, setNotifications } = useContext(NotificationContext);
+  const { setLikingReviews } = useContext(LikeContext);
+  const { setOwneredHouses } = useContext(OwnerContext);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [bottomMenuValue, setBottomMenuValue] = useState<number>(0);
 
@@ -161,6 +165,9 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
       }
     }
     const handleGuestLogin = async() => {
+      if (setAnchorElSignup !== null) {
+        setAnchorElSignup(null);
+      }
       // ゲストユーザー用のアカウントとして、ログインする
       try {
         const guestLoginData = {
@@ -195,6 +202,11 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
   
           setIsSignedIn(false);
           setCurrentUser(undefined);
+          setFollowingUsers([]);
+          setLikingReviews([]);
+          setBookmarkingHouses([]);
+          setNotifications([]);
+          setOwneredHouses([]);
           navigate('/signin');
   
           console.log('ログアウトに成功しました');
@@ -432,34 +444,24 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
                 open={Boolean(anchorElSignup)}
                 onClose={handleCloseSignupMenu}
               >
-                <MenuItem onClick={handleCloseSignupMenu}>
-                  <Link
-                    component={RouterLink}
-                    to='/signup'
-                    color="inherit"
-                    underline='none'
-                    >
-                      新規登録
-                  </Link>
+                <MenuItem
+                  component={RouterLink}
+                  to='/signup'
+                  onClick={handleCloseSignupMenu}
+                >
+                  <ListItemText>新規登録</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={handleCloseSignupMenu}>
-                  <Link
-                    component={RouterLink}
-                    to='/signin'
-                    color="inherit"
-                    underline='none'
-                  >
-                      ログイン
-                  </Link>
+                <MenuItem
+                  component={RouterLink}
+                  to='/signin'
+                  onClick={handleCloseSignupMenu}
+                >
+                  <ListItemText sx={{marginX: 'auto'}}>ログイン</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={handleCloseSignupMenu}>
-                  <Link
-                    color="inherit"
-                    underline='none'
-                    onClick={handleGuestLogin}
-                  >
-                      ゲストログイン（閲覧用）
-                  </Link>
+                <MenuItem
+                  onClick={handleGuestLogin}
+                >
+                  <ListItemText>ゲストログイン（閲覧用）</ListItemText>
                 </MenuItem>
               </Menu>
             </Box>
