@@ -517,7 +517,7 @@ const ReviewShow: React.FC = () => {
                                 color='inherit'
                                 sx={{ textDecoration: 'none' }}
                               >
-                                {review.user.name}さん
+                                {comment.user.name}さん
                               </Typography>
                             }
                           />
