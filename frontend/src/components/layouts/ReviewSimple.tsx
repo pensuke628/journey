@@ -20,7 +20,7 @@ import MessageIcon from '@mui/icons-material/Message';
 import CustomTag from 'components/utils/Tag';
 
 // interfaceのimport
-import { Notification, ReviewData, Tag, UserData } from 'interfaces/index';
+import { HouseData, Notification, ReviewData, Tag, UserData } from 'interfaces/index';
 
 //  Contextのimport
 import { AuthContext, LikeContext } from 'App';
@@ -35,6 +35,7 @@ type Props = {
   date: Date
   evaluation: number | null
   user: UserData
+  house: HouseData
   tags: Tag[] | undefined
   setState: Function
 }
@@ -140,8 +141,34 @@ const ReviewSimple: React.FC<Props> = (props) => {
             src={props.user.avatar.url}
           />
         }
-        title={`${props.user.name}さん`}
-        subheader={`${viewDate(props.date)}訪問`}
+        title={
+          <Typography
+            component={RouterLink}
+            to={`/users/${props.user.id}`}
+            color='inherit'
+            sx={{ textDecoration: 'none' }}
+          >
+            {props.user.name}さん
+          </Typography>
+        }
+        subheader={
+          <Box sx={{ display: 'flex' }}>
+            <Typography
+              component={RouterLink}
+              to={`/houses/${props.house.id}`}
+              color='inherit'
+              sx={{
+                textDecoration: 'none',
+                mr:1
+              }}
+            >
+              {props.house.name}
+            </Typography>
+            <Typography>
+              {viewDate(props.date)}訪問
+            </Typography>
+          </Box>
+        }
       />
       <CardContent>
         <Box

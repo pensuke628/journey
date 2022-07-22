@@ -538,6 +538,7 @@ const HouseDetail: React.FC<Props> = (props) => {
                     content={review.content}
                     date={review.date}
                     user={review.user}
+                    house={review.house}
                     evaluation={review.evaluation}
                     tags={review.tags}
                     setState={DummyFuction}

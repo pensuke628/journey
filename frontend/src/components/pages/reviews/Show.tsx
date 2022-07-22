@@ -88,7 +88,32 @@ const ReviewShow: React.FC = () => {
       following: [],
       followers: [],
     },
-    houseId: 0,
+    house: {
+      id: 0,
+      name: "",
+      postalCode: "",
+      prefectures: "",
+      municipalities: "",
+      latitude: undefined,
+      longitude: undefined,
+      image: {
+        url: ""
+      },
+      profile: "",
+      phoneNumber: "",
+      email: "",
+      relatedWebsite: "",
+      price: "",
+      period: "",
+      checkInTime: "",
+      checkOutTime: "",
+      capacity: "",
+      parking: "",
+      bath: "",
+      shopping: "",
+      note: "",
+      tags: [],
+    },
     createdAt: new Date(),
     updatedAt: new Date(),
     comments: [],
@@ -129,7 +154,7 @@ const ReviewShow: React.FC = () => {
     try {
       const res = await getReview(query.id);
       if (res.status === 200) {
-        console.log(res.data);
+        // console.log(res.data);
         setReview(res.data);
         setReviewComments(res.data.comments);
         setReviewImages(res.data.images);
@@ -150,7 +175,7 @@ const ReviewShow: React.FC = () => {
       const res = await destroyReview(query.id);
       console.log(res);
       if (res.status === 200) {
-        navigate(`/houses/${review.houseId}`);
+        navigate(`/houses/${review.house.id}`);
       }
     } catch (error) {
       console.log(error);
@@ -341,8 +366,34 @@ const ReviewShow: React.FC = () => {
                     src={review.user.avatar.url}
                   />
                 }
-                title={`${review.user.name}さん`}
-                subheader={`${viewDate(review.date)}訪問`}
+                title={
+                  <Typography
+                    component={RouterLink}
+                    to={`/users/${review.user.id}`}
+                    color='inherit'
+                    sx={{ textDecoration: 'none' }}
+                  >
+                    {review.user.name}さん
+                  </Typography>
+                }
+                subheader={
+                  <Box sx={{ display: 'flex' }}>
+                    <Typography
+                      component={RouterLink}
+                      to={`/houses/${review.house.id}`}
+                      color='inherit'
+                      sx={{
+                        textDecoration: 'none',
+                        mr:1
+                      }}
+                    >
+                      {review.house.name}
+                    </Typography>
+                    <Typography>
+                      {viewDate(review.date)}訪問
+                    </Typography>
+                  </Box>
+                }
               />
               <CardContent>
                 <Box sx={{
