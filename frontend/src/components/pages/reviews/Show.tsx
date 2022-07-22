@@ -31,7 +31,7 @@ import CustomTag from 'components/utils/Tag';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { AuthContext } from 'App';
+import { AuthContext, OwnerContext } from 'App';
 import { ReviewUpdateParams, ReviewData, Comment, CommentUpdateParams, Notification } from 'interfaces/index';
 
 import { getReview, updateReview, destroyReview } from 'lib/api/review';
@@ -130,7 +130,8 @@ const ReviewShow: React.FC = () => {
   });
 
   const navigate = useNavigate();
-  const { currentUser } = useContext(AuthContext);
+  const { isSignedIn, currentUser } = useContext(AuthContext);
+  const { owneredHouses } = useContext(OwnerContext);
   const query = useParams<{ id: string }>();
 
   type Image = {
@@ -154,7 +155,7 @@ const ReviewShow: React.FC = () => {
     try {
       const res = await getReview(query.id);
       if (res.status === 200) {
-        // console.log(res.data);
+        console.log(res.data);
         setReview(res.data);
         setReviewComments(res.data.comments);
         setReviewImages(res.data.images);
@@ -207,41 +208,43 @@ const ReviewShow: React.FC = () => {
   const handleCreateComment = async() => {
     let id:number = Number(query.id);
 
-    const params = {
-      content: comment,
-      userId: currentUser?.id,
-      reviewId: id
-    };
+    if (currentUser !== undefined) {
+      const params = {
+        content: comment,
+        reviewId: id,
+        user: currentUser
+      };
 
-    try {
-      const res = await createComment(params);
-      console.log(res);
-      if (res.status === 200) {
-        setReviewComments([res.data.comment, ...reviewComments ]);
-        console.log('コメントを作成しました')
-        setCommentViewOpen(false);
+      try {
+        const res = await createComment(params);
+        // console.log(res);
+        if (res.status === 200) {
+          setReviewComments([res.data.comment, ...reviewComments ]);
+          // console.log('コメントを作成しました')
+          setCommentViewOpen(false);
 
-        const notificationParams: Notification = {
-          senderId: currentUser?.id,
-          receiverId: res.data.other.id,
-          reviewId: undefined,
-          commentId: res.data.comment.id,
-          messageId: undefined,
-          act: 'comment',
-          checked: undefined,
-          createdAt: undefined,
-          updatedAt: undefined
-        };
+          const notificationParams: Notification = {
+            senderId: currentUser?.id,
+            receiverId: res.data.other.id,
+            reviewId: undefined,
+            commentId: res.data.comment.id,
+            messageId: undefined,
+            act: 'comment',
+            checked: undefined,
+            createdAt: undefined,
+            updatedAt: undefined
+          };
 
-        const notification = await createNotification(notificationParams);
-        if (notification.status === 200) {
-          console.log('コメント通知を作成しました');
-        } else {
-          console.log('通知作成に失敗しました');
+          const notification = await createNotification(notificationParams);
+          // if (notification.status === 200) {
+          //   console.log('コメント通知を作成しました');
+          // } else {
+          //   console.log('通知作成に失敗しました');
+          // }
         }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
   }
 
@@ -253,7 +256,7 @@ const ReviewShow: React.FC = () => {
     }
     try {
       const res = await updateComment(id, params);
-      console.log(res);
+      // console.log(res);
       if (res.status === 200) {
         const filtercomment = reviewComments.filter(comment => comment.id !== id)
         setReview({...review, comments: filtercomment})
@@ -403,7 +406,8 @@ const ReviewShow: React.FC = () => {
                 >
                   <Rating
                     value={review.evaluation}
-                    readOnly
+                    precision={0.5}
+                    readOnly                    
                   />
                   <Typography
                   >
@@ -450,12 +454,18 @@ const ReviewShow: React.FC = () => {
                     )}
                   </ImageList>
                   <CardActions>
-                    <IconButton><FavoriteIcon/></IconButton>
-                    <IconButton
-                      onClick={handleCommentViewOpen}
-                    >
-                      <MessageIcon/>
+                    <IconButton>
+                      <FavoriteIcon/>
                     </IconButton>
+                    {
+                      // 施設のオーナーのみ表示する
+                      (owneredHouses.some(house => house.id === review.house.id)) &&
+                        <IconButton
+                          onClick={handleCommentViewOpen}
+                        >
+                          <MessageIcon/>
+                        </IconButton>
+                    }
                   </CardActions>
                 </Box>
               </CardContent>
@@ -494,23 +504,35 @@ const ReviewShow: React.FC = () => {
                         <Card key={index} sx={{ m:2 }}>
                           <CardHeader
                             avatar={
-                              <Avatar>
-                              </Avatar>
+                              <Avatar
+                                component={RouterLink}
+                                to={`/users/${comment.user.id}`}
+                                src={comment.user.avatar.url}
+                              />
                             }
-                            title='コメントしたユーザー名'
+                            title={
+                              <Typography
+                                component={RouterLink}
+                                to={`/users/${comment.user.id}`}
+                                color='inherit'
+                                sx={{ textDecoration: 'none' }}
+                              >
+                                {review.user.name}さん
+                              </Typography>
+                            }
                           />
                           <CardContent>
                             <TextField
                               fullWidth
                               defaultValue={comment.content}
                               InputProps={{
-                                readOnly: (!editComment || comment.userId !== currentUser?.id),
+                                readOnly: (!editComment || comment.user.id !== currentUser?.id),
                               }}
                               onChange={(event: React.ChangeEvent<HTMLInputElement>) => setComment(event.target.value)}
                               sx={styles.commentField}
                             />
                           </CardContent>
-                            { comment.userId === currentUser?.id ? (
+                            { comment.user.id === currentUser?.id ? (
                                 editComment ? (
                                   <CardActions>
                                     <Button
@@ -550,30 +572,45 @@ const ReviewShow: React.FC = () => {
                       )
                     })
                   }
-                  <Button
-                    variant='contained'
-                    color='success'
-                    startIcon={<EditIcon/>}
-                    onClick={handleEdit}
-                  >
-                    編集する
-                  </Button>
-                  <Button
-                    variant='contained'
-                    color='error'
-                    startIcon={<DeleteForeverIcon/>}
-                    onClick={handleDestroy}
-                  >
-                    削除する
-                  </Button>
-                  <Button
-                    variant='contained'
-                    color='info'
-                    startIcon={<InfoIcon/>}
-                    onClick={handleDeleteRequest}
-                  >
-                    削除依頼する
-                  </Button>              
+                  <Box sx={{ display: 'flex' }}>
+                  { 
+                    // 口コミ投稿者のみ表示する
+                    (review.user.id === currentUser?.id) &&
+                      <Box>
+                        <Button
+                          variant='contained'
+                          color='success'
+                          startIcon={<EditIcon/>}
+                          onClick={handleEdit}
+                          sx={{ m:1 }}
+                        >
+                          編集する
+                        </Button>
+                        <Button
+                          variant='contained'
+                          color='error'
+                          startIcon={<DeleteForeverIcon/>}
+                          onClick={handleDestroy}
+                          sx={{ m:1 }}
+                        >
+                          削除する
+                        </Button>
+                      </Box>
+                  }
+                  { 
+                    // 施設のオーナーのみ表示する
+                    (owneredHouses.some(house => house.id === review.house.id)) &&
+                      <Button
+                        variant='contained'
+                        color='info'
+                        startIcon={<InfoIcon/>}
+                        onClick={handleDeleteRequest}
+                        sx={{ m:1 }}
+                      >
+                        削除依頼する
+                      </Button>              
+                  }
+                  </Box>
                 </Box>
               )
             }
