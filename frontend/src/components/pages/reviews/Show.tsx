@@ -31,13 +31,14 @@ import CustomTag from 'components/utils/Tag';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { AuthContext, OwnerContext } from 'App';
+import { AuthContext, LikeContext, OwnerContext } from 'App';
 import { ReviewUpdateParams, ReviewData, Comment, CommentUpdateParams, Notification } from 'interfaces/index';
 
 import { getReview, updateReview, destroyReview } from 'lib/api/review';
 import { ReviewUpdateSchema } from 'schema/review';
 import { deleteRequest } from 'lib/api/owner';
 import { createComment, updateComment, destroyComment } from 'lib/api/comment';
+import { like, unlike } from 'lib/api/like';
 import { createNotification } from 'lib/api/notification';
 
 const styles = {
@@ -131,6 +132,7 @@ const ReviewShow: React.FC = () => {
 
   const navigate = useNavigate();
   const { isSignedIn, currentUser } = useContext(AuthContext);
+  const { likingReviews, setLikingReviews } = useContext(LikeContext);
   const { owneredHouses } = useContext(OwnerContext);
   const query = useParams<{ id: string }>();
 
@@ -159,6 +161,49 @@ const ReviewShow: React.FC = () => {
         setReview(res.data);
         setReviewComments(res.data.comments);
         setReviewImages(res.data.images);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleCreateLike = async() => {
+    const params = {
+      reviewId: review.id
+    };
+
+    const notificationParams: Notification = {
+      senderId: currentUser?.id,
+      receiverId: review.user.id,
+      reviewId: review.id,
+      commentId: undefined,
+      messageId: undefined,
+      act: 'like',
+      checked: undefined,
+      createdAt: undefined,
+      updatedAt: undefined
+    };
+
+    try {
+      const res = await like(params);
+      if (res.status === 200) {
+        setLikingReviews([...likingReviews, res.data.data]);
+        const notification = await createNotification(notificationParams);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleDestroyLike = async() => {
+    const params = {
+      reviewId: review.id
+    }
+    try {
+      const res = await unlike(params);
+      if (res.status === 200) {
+        const newLikingReview = likingReviews.filter((likedReview: ReviewData ) => likedReview.id !== review.id );
+        setLikingReviews([...newLikingReview]);
       }
     } catch (error) {
       console.log(error);
@@ -308,6 +353,10 @@ const ReviewShow: React.FC = () => {
     navigate('/reviews/search', { state: keyword });
   };
 
+  const isLikedReview = (reviewId: number | undefined): boolean => {
+    return likingReviews?.some((likedReview: ReviewData) => likedReview.id === reviewId)
+  };
+
   useEffect(() => {
     fetch();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -454,9 +503,23 @@ const ReviewShow: React.FC = () => {
                     )}
                   </ImageList>
                   <CardActions>
-                    <IconButton>
-                      <FavoriteIcon/>
-                    </IconButton>
+                    {
+                      isSignedIn && (
+                        isLikedReview(review.id) ? (
+                          <IconButton
+                            onClick={handleDestroyLike}
+                          >
+                            <FavoriteIcon sx={{ color: 'red' }}/>
+                          </IconButton> 
+                        ) : (
+                          <IconButton
+                            onClick={handleCreateLike}
+                          >
+                            <FavoriteIcon/>
+                          </IconButton> 
+                        )
+                      )
+                    }
                     {
                       // 施設のオーナーのみ表示する
                       (owneredHouses.some(house => house.id === review.house.id)) &&
