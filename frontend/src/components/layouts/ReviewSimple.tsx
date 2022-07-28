@@ -44,7 +44,7 @@ const ReviewSimple: React.FC<Props> = (props) => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser } = useContext(AuthContext);
+  const { isSignedIn, currentUser } = useContext(AuthContext);
   const {likingReviews, setLikingReviews} = useContext(LikeContext);
 
   const viewDate = (date: Date) => {
@@ -206,24 +206,26 @@ const ReviewSimple: React.FC<Props> = (props) => {
             })
           }
           </Box>
-          <CardActions>
-            { isLikedReview(props.id) ? (
-                <IconButton
-                  onClick={handleDestroyLike}
-                >
-                  <FavoriteIcon sx={{ color: 'red' }}/>
-                </IconButton> 
-              ) : (
-                <IconButton
-                  onClick={handleCreateLike}
-                >
-                  <FavoriteIcon/>
-                </IconButton> 
-              )
-            }
-            <IconButton><MessageIcon/></IconButton>
-            <IconButton><DeleteForeverIcon/></IconButton>
-          </CardActions>
+          {
+            isSignedIn &&
+              <CardActions>
+                {
+                  isLikedReview(props.id) ? (
+                    <IconButton
+                      onClick={handleDestroyLike}
+                    >
+                      <FavoriteIcon sx={{ color: 'red' }}/>
+                    </IconButton> 
+                  ) : (
+                    <IconButton
+                      onClick={handleCreateLike}
+                    >
+                      <FavoriteIcon/>
+                    </IconButton> 
+                  )
+                }
+              </CardActions>
+          }
         </Box>
       </CardContent>
     </Card>
