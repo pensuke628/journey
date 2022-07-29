@@ -22,7 +22,7 @@ class HouseSerializer < ActiveModel::Serializer
              :note
 
   has_many :reviews, serializer: ReviewSerializer do
-    object.reviews.order_new
+    object.reviews.visit_new
   end
   has_many :tags
 end

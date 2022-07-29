@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams, useNavigate, } from "react-router-dom";
+import { Link as RouterLink, useParams, useNavigate, } from "react-router-dom";
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -31,13 +31,14 @@ import CustomTag from 'components/utils/Tag';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { AuthContext } from 'App';
+import { AuthContext, LikeContext, OwnerContext } from 'App';
 import { ReviewUpdateParams, ReviewData, Comment, CommentUpdateParams, Notification } from 'interfaces/index';
 
 import { getReview, updateReview, destroyReview } from 'lib/api/review';
 import { ReviewUpdateSchema } from 'schema/review';
 import { deleteRequest } from 'lib/api/owner';
 import { createComment, updateComment, destroyComment } from 'lib/api/comment';
+import { like, unlike } from 'lib/api/like';
 import { createNotification } from 'lib/api/notification';
 
 const styles = {
@@ -69,8 +70,51 @@ const ReviewShow: React.FC = () => {
     content: '',
     date: new Date(),
     evaluation: 0,
-    userId: 0,
-    houseId: 0,
+    user: {
+      id: 0,
+      name: '',
+      email: '',
+      avatar: {
+        url: ''
+      },
+      profile: '',
+      backgroundImage: {
+        url: ''
+      },
+      provider: '',
+      uid: '',
+      allowPasswordChange: true,
+      reviews: [],
+      likes: [],
+      following: [],
+      followers: [],
+    },
+    house: {
+      id: 0,
+      name: "",
+      postalCode: "",
+      prefectures: "",
+      municipalities: "",
+      latitude: undefined,
+      longitude: undefined,
+      image: {
+        url: ""
+      },
+      profile: "",
+      phoneNumber: "",
+      email: "",
+      relatedWebsite: "",
+      price: "",
+      period: "",
+      checkInTime: "",
+      checkOutTime: "",
+      capacity: "",
+      parking: "",
+      bath: "",
+      shopping: "",
+      note: "",
+      tags: [],
+    },
     createdAt: new Date(),
     updatedAt: new Date(),
     comments: [],
@@ -87,7 +131,9 @@ const ReviewShow: React.FC = () => {
   });
 
   const navigate = useNavigate();
-  const { currentUser } = useContext(AuthContext);
+  const { isSignedIn, currentUser } = useContext(AuthContext);
+  const { likingReviews, setLikingReviews } = useContext(LikeContext);
+  const { owneredHouses } = useContext(OwnerContext);
   const query = useParams<{ id: string }>();
 
   type Image = {
@@ -111,10 +157,53 @@ const ReviewShow: React.FC = () => {
     try {
       const res = await getReview(query.id);
       if (res.status === 200) {
-        // console.log(res.data);
+        console.log(res.data);
         setReview(res.data);
         setReviewComments(res.data.comments);
         setReviewImages(res.data.images);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleCreateLike = async() => {
+    const params = {
+      reviewId: review.id
+    };
+
+    const notificationParams: Notification = {
+      senderId: currentUser?.id,
+      receiverId: review.user.id,
+      reviewId: review.id,
+      commentId: undefined,
+      messageId: undefined,
+      act: 'like',
+      checked: undefined,
+      createdAt: undefined,
+      updatedAt: undefined
+    };
+
+    try {
+      const res = await like(params);
+      if (res.status === 200) {
+        setLikingReviews([...likingReviews, res.data.data]);
+        const notification = await createNotification(notificationParams);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleDestroyLike = async() => {
+    const params = {
+      reviewId: review.id
+    }
+    try {
+      const res = await unlike(params);
+      if (res.status === 200) {
+        const newLikingReview = likingReviews.filter((likedReview: ReviewData ) => likedReview.id !== review.id );
+        setLikingReviews([...newLikingReview]);
       }
     } catch (error) {
       console.log(error);
@@ -132,7 +221,7 @@ const ReviewShow: React.FC = () => {
       const res = await destroyReview(query.id);
       console.log(res);
       if (res.status === 200) {
-        navigate(`/houses/${review.houseId}`);
+        navigate(`/houses/${review.house.id}`);
       }
     } catch (error) {
       console.log(error);
@@ -164,41 +253,43 @@ const ReviewShow: React.FC = () => {
   const handleCreateComment = async() => {
     let id:number = Number(query.id);
 
-    const params = {
-      content: comment,
-      userId: currentUser?.id,
-      reviewId: id
-    };
+    if (currentUser !== undefined) {
+      const params = {
+        content: comment,
+        reviewId: id,
+        user: currentUser
+      };
 
-    try {
-      const res = await createComment(params);
-      console.log(res);
-      if (res.status === 200) {
-        setReviewComments([res.data.comment, ...reviewComments ]);
-        console.log('コメントを作成しました')
-        setCommentViewOpen(false);
+      try {
+        const res = await createComment(params);
+        // console.log(res);
+        if (res.status === 200) {
+          setReviewComments([res.data.comment, ...reviewComments ]);
+          // console.log('コメントを作成しました')
+          setCommentViewOpen(false);
 
-        const notificationParams: Notification = {
-          senderId: currentUser?.id,
-          receiverId: res.data.other.id,
-          reviewId: undefined,
-          commentId: res.data.comment.id,
-          messageId: undefined,
-          act: 'comment',
-          checked: undefined,
-          createdAt: undefined,
-          updatedAt: undefined
-        };
+          const notificationParams: Notification = {
+            senderId: currentUser?.id,
+            receiverId: res.data.other.id,
+            reviewId: undefined,
+            commentId: res.data.comment.id,
+            messageId: undefined,
+            act: 'comment',
+            checked: undefined,
+            createdAt: undefined,
+            updatedAt: undefined
+          };
 
-        const notification = await createNotification(notificationParams);
-        if (notification.status === 200) {
-          console.log('コメント通知を作成しました');
-        } else {
-          console.log('通知作成に失敗しました');
+          const notification = await createNotification(notificationParams);
+          // if (notification.status === 200) {
+          //   console.log('コメント通知を作成しました');
+          // } else {
+          //   console.log('通知作成に失敗しました');
+          // }
         }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
   }
 
@@ -210,7 +301,7 @@ const ReviewShow: React.FC = () => {
     }
     try {
       const res = await updateComment(id, params);
-      console.log(res);
+      // console.log(res);
       if (res.status === 200) {
         const filtercomment = reviewComments.filter(comment => comment.id !== id)
         setReview({...review, comments: filtercomment})
@@ -260,6 +351,10 @@ const ReviewShow: React.FC = () => {
   const handleTagSearch = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const keyword = event.currentTarget.value;
     navigate('/reviews/search', { state: keyword });
+  };
+
+  const isLikedReview = (reviewId: number | undefined): boolean => {
+    return likingReviews?.some((likedReview: ReviewData) => likedReview.id === reviewId)
   };
 
   useEffect(() => {
@@ -317,12 +412,40 @@ const ReviewShow: React.FC = () => {
             <Card>
               <CardHeader
                 avatar={
-                  <Avatar>
-                    R
-                  </Avatar>
+                  <Avatar
+                    component={RouterLink}
+                    to={`/users/${review.user.id}`}
+                    src={review.user.avatar.url}
+                  />
                 }
-                title='ユーザー名を表示させる予定'
-                subheader={`${viewDate(review.date)}訪問`}
+                title={
+                  <Typography
+                    component={RouterLink}
+                    to={`/users/${review.user.id}`}
+                    color='inherit'
+                    sx={{ textDecoration: 'none' }}
+                  >
+                    {review.user.name}さん
+                  </Typography>
+                }
+                subheader={
+                  <Box sx={{ display: 'flex' }}>
+                    <Typography
+                      component={RouterLink}
+                      to={`/houses/${review.house.id}`}
+                      color='inherit'
+                      sx={{
+                        textDecoration: 'none',
+                        mr:1
+                      }}
+                    >
+                      {review.house.name}
+                    </Typography>
+                    <Typography>
+                      {viewDate(review.date)}訪問
+                    </Typography>
+                  </Box>
+                }
               />
               <CardContent>
                 <Box sx={{
@@ -332,7 +455,8 @@ const ReviewShow: React.FC = () => {
                 >
                   <Rating
                     value={review.evaluation}
-                    readOnly
+                    precision={0.5}
+                    readOnly                    
                   />
                   <Typography
                   >
@@ -379,12 +503,32 @@ const ReviewShow: React.FC = () => {
                     )}
                   </ImageList>
                   <CardActions>
-                    <IconButton><FavoriteIcon/></IconButton>
-                    <IconButton
-                      onClick={handleCommentViewOpen}
-                    >
-                      <MessageIcon/>
-                    </IconButton>
+                    {
+                      isSignedIn && (
+                        isLikedReview(review.id) ? (
+                          <IconButton
+                            onClick={handleDestroyLike}
+                          >
+                            <FavoriteIcon sx={{ color: 'red' }}/>
+                          </IconButton> 
+                        ) : (
+                          <IconButton
+                            onClick={handleCreateLike}
+                          >
+                            <FavoriteIcon/>
+                          </IconButton> 
+                        )
+                      )
+                    }
+                    {
+                      // 施設のオーナーのみ表示する
+                      (owneredHouses.some(house => house.id === review.house.id)) &&
+                        <IconButton
+                          onClick={handleCommentViewOpen}
+                        >
+                          <MessageIcon/>
+                        </IconButton>
+                    }
                   </CardActions>
                 </Box>
               </CardContent>
@@ -423,23 +567,35 @@ const ReviewShow: React.FC = () => {
                         <Card key={index} sx={{ m:2 }}>
                           <CardHeader
                             avatar={
-                              <Avatar>
-                              </Avatar>
+                              <Avatar
+                                component={RouterLink}
+                                to={`/users/${comment.user.id}`}
+                                src={comment.user.avatar.url}
+                              />
                             }
-                            title='コメントしたユーザー名'
+                            title={
+                              <Typography
+                                component={RouterLink}
+                                to={`/users/${comment.user.id}`}
+                                color='inherit'
+                                sx={{ textDecoration: 'none' }}
+                              >
+                                {comment.user.name}さん
+                              </Typography>
+                            }
                           />
                           <CardContent>
                             <TextField
                               fullWidth
                               defaultValue={comment.content}
                               InputProps={{
-                                readOnly: (!editComment || comment.userId !== currentUser?.id),
+                                readOnly: (!editComment || comment.user.id !== currentUser?.id),
                               }}
                               onChange={(event: React.ChangeEvent<HTMLInputElement>) => setComment(event.target.value)}
                               sx={styles.commentField}
                             />
                           </CardContent>
-                            { comment.userId === currentUser?.id ? (
+                            { comment.user.id === currentUser?.id ? (
                                 editComment ? (
                                   <CardActions>
                                     <Button
@@ -479,30 +635,45 @@ const ReviewShow: React.FC = () => {
                       )
                     })
                   }
-                  <Button
-                    variant='contained'
-                    color='success'
-                    startIcon={<EditIcon/>}
-                    onClick={handleEdit}
-                  >
-                    編集する
-                  </Button>
-                  <Button
-                    variant='contained'
-                    color='error'
-                    startIcon={<DeleteForeverIcon/>}
-                    onClick={handleDestroy}
-                  >
-                    削除する
-                  </Button>
-                  <Button
-                    variant='contained'
-                    color='info'
-                    startIcon={<InfoIcon/>}
-                    onClick={handleDeleteRequest}
-                  >
-                    削除依頼する
-                  </Button>              
+                  <Box sx={{ display: 'flex' }}>
+                  { 
+                    // 口コミ投稿者のみ表示する
+                    (review.user.id === currentUser?.id) &&
+                      <Box>
+                        <Button
+                          variant='contained'
+                          color='success'
+                          startIcon={<EditIcon/>}
+                          onClick={handleEdit}
+                          sx={{ m:1 }}
+                        >
+                          編集する
+                        </Button>
+                        <Button
+                          variant='contained'
+                          color='error'
+                          startIcon={<DeleteForeverIcon/>}
+                          onClick={handleDestroy}
+                          sx={{ m:1 }}
+                        >
+                          削除する
+                        </Button>
+                      </Box>
+                  }
+                  { 
+                    // 施設のオーナーのみ表示する
+                    (owneredHouses.some(house => house.id === review.house.id)) &&
+                      <Button
+                        variant='contained'
+                        color='info'
+                        startIcon={<InfoIcon/>}
+                        onClick={handleDeleteRequest}
+                        sx={{ m:1 }}
+                      >
+                        削除依頼する
+                      </Button>              
+                  }
+                  </Box>
                 </Box>
               )
             }

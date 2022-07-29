@@ -65,7 +65,6 @@ const UserMessageRooms: React.FC = () => {
   return (
     <Container>
       <h1>メッセージ一覧</h1>
-      <h1>検索BOX</h1>
       { messageRooms.length > 0 ? (
           messageRooms.map((messageRoom: MessageRoom, index: number) => {
             return (

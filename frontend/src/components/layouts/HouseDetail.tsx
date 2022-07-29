@@ -537,7 +537,8 @@ const HouseDetail: React.FC<Props> = (props) => {
                     id={review.id}
                     content={review.content}
                     date={review.date}
-                    userId={review.userId}
+                    user={review.user}
+                    house={review.house}
                     evaluation={review.evaluation}
                     tags={review.tags}
                     setState={DummyFuction}

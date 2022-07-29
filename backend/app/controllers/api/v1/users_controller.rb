@@ -7,21 +7,27 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def show
-    render json: @user, each_serializer: UserSerializer, include: %i[reviews following followers]
+    render json: @user, each_serializer: UserSerializer, include: [{ reviews: :house }, :following, :followers]
   end
 
   def update
-    if @user.update(user_params)
-      response_success(:user, :update)
+    # ゲストユーザーはユーザー名とemailを変更できないようにする
+    if @user.name == 'ゲストユーザー'
+      @user.update(guest_user_params)
     else
-      render json: @user.errors, status: :unprocessable_entity
+      @user.update(user_params)
     end
+    response_success(:user, :update)
   end
 
   private
 
     def user_params
       params.permit(:id, :name, :email, :profile, :avatar, :background_image)
+    end
+
+    def guest_user_params
+      params.permit(:id, :profile, :avatar, :background_image)
     end
 
     def set_user

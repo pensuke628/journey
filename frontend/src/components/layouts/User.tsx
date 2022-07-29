@@ -115,7 +115,7 @@ const User: React.FC<UserData> = (props) => {
       <CardMedia
         component="img"
         image={
-          props.backgroundImage ? props.backgroundImage.url : defaultBckgroundImage
+          props.backgroundImage.url ? props.backgroundImage.url : defaultBckgroundImage
         }
         alt='Image for user_background_image'
         height='100'

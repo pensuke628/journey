@@ -20,7 +20,7 @@ import MessageIcon from '@mui/icons-material/Message';
 import CustomTag from 'components/utils/Tag';
 
 // interfaceのimport
-import { Notification, ReviewData, Tag } from 'interfaces/index';
+import { HouseData, Notification, ReviewData, Tag, UserData } from 'interfaces/index';
 
 //  Contextのimport
 import { AuthContext, LikeContext } from 'App';
@@ -34,7 +34,8 @@ type Props = {
   content: string
   date: Date
   evaluation: number | null
-  userId: number
+  user: UserData
+  house: HouseData
   tags: Tag[] | undefined
   setState: Function
 }
@@ -43,7 +44,7 @@ const ReviewSimple: React.FC<Props> = (props) => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser } = useContext(AuthContext);
+  const { isSignedIn, currentUser } = useContext(AuthContext);
   const {likingReviews, setLikingReviews} = useContext(LikeContext);
 
   const viewDate = (date: Date) => {
@@ -69,7 +70,7 @@ const ReviewSimple: React.FC<Props> = (props) => {
 
     const notificationParams: Notification = {
       senderId: currentUser?.id,
-      receiverId: props.userId,
+      receiverId: props.user.id,
       reviewId: props.id,
       commentId: undefined,
       messageId: undefined,
@@ -134,17 +135,46 @@ const ReviewSimple: React.FC<Props> = (props) => {
     >
       <CardHeader
         avatar={
-          <Avatar>
-            R
-          </Avatar>
+          <Avatar
+            component={RouterLink}
+            to={`/users/${props.user.id}`}
+            src={props.user.avatar.url}
+          />
         }
-        title='ユーザー名を表示させる予定'
-        subheader={`${viewDate(props.date)}訪問`}
+        title={
+          <Typography
+            component={RouterLink}
+            to={`/users/${props.user.id}`}
+            color='inherit'
+            sx={{ textDecoration: 'none' }}
+          >
+            {props.user.name}さん
+          </Typography>
+        }
+        subheader={
+          <Box sx={{ display: 'flex' }}>
+            <Typography
+              component={RouterLink}
+              to={`/houses/${props.house.id}`}
+              color='inherit'
+              sx={{
+                textDecoration: 'none',
+                mr:1
+              }}
+            >
+              {props.house.name}
+            </Typography>
+            <Typography>
+              {viewDate(props.date)}訪問
+            </Typography>
+          </Box>
+        }
       />
       <CardContent>
-        <Box sx={{
-          display: 'flex',
-          flexDirection: 'column'
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
           <Rating
@@ -154,6 +184,10 @@ const ReviewSimple: React.FC<Props> = (props) => {
           <Typography
             component={RouterLink}
             to={`/reviews/${props.id}`}
+            sx={{
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
           >
             {props.content}
           </Typography>
@@ -172,24 +206,26 @@ const ReviewSimple: React.FC<Props> = (props) => {
             })
           }
           </Box>
-          <CardActions>
-            { isLikedReview(props.id) ? (
-                <IconButton
-                  onClick={handleDestroyLike}
-                >
-                  <FavoriteIcon sx={{ color: 'red' }}/>
-                </IconButton> 
-              ) : (
-                <IconButton
-                  onClick={handleCreateLike}
-                >
-                  <FavoriteIcon/>
-                </IconButton> 
-              )
-            }
-            <IconButton><MessageIcon/></IconButton>
-            <IconButton><DeleteForeverIcon/></IconButton>
-          </CardActions>
+          {
+            isSignedIn &&
+              <CardActions>
+                {
+                  isLikedReview(props.id) ? (
+                    <IconButton
+                      onClick={handleDestroyLike}
+                    >
+                      <FavoriteIcon sx={{ color: 'red' }}/>
+                    </IconButton> 
+                  ) : (
+                    <IconButton
+                      onClick={handleCreateLike}
+                    >
+                      <FavoriteIcon/>
+                    </IconButton> 
+                  )
+                }
+              </CardActions>
+          }
         </Box>
       </CardContent>
     </Card>

@@ -154,27 +154,12 @@ const Top: React.FC = () => {
         }}
       >
         {
-          (isSignedIn && currentUser) ? (
+          isSignedIn && currentUser &&
             <>
-              <Typography variant='h1' sx={{ color: 'white' }}>
-                ここはテスト用Topページです
-              </Typography>
-              <Typography variant='h1' sx={{ color: 'white' }}>
+              <Typography variant='h1' sx={{ color: 'black' }}>
                 ようこそ！ {currentUser?.name} さん
               </Typography>
-              <Button
-                component={RouterLink}
-                to='/owners'
-                variant='contained'
-              >
-                オーナーになる
-              </Button>
             </>
-          ) : (
-            <Typography variant='h1' sx={{ color: 'white' }}>
-              TOP
-            </Typography>
-          )
         }
       </Box>
     );
@@ -260,6 +245,35 @@ const Top: React.FC = () => {
                 </Card>
               </Grid>
             </Grid>
+            {/* <Card variant='outlined'>
+              <CardContent>
+                <Typography>
+                  ライダーハウス・ゲストハウスの管理者様へ
+                </Typography>
+                <Typography>
+                  ログインしてオーナーになると、自身の施設情報を編集できるようになります！
+                </Typography>
+                {
+                  isSignedIn && currentUser ? (
+                    <Button
+                      component={RouterLink}
+                      to='/owners'
+                      variant='contained'
+                     >
+                      オーナーになる
+                    </Button>
+                  ) : (
+                    <Button
+                      component={RouterLink}
+                      to='/owners'
+                      variant='contained'
+                     >
+                      ログインはこちら
+                    </Button>
+                  )
+                }
+              </CardContent>
+            </Card> */}
           </>
         )    
       }      
