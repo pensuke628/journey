@@ -47,6 +47,7 @@ const ReviewSearch: React.FC = () => {
                 date={review.date}
                 evaluation={review.evaluation}
                 user={review.user}
+                house={review.house}
                 tags={review.tags}
                 setState={handleSetKeyword}
               />

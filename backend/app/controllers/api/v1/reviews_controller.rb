@@ -17,7 +17,10 @@ class Api::V1::ReviewsController < ApplicationController
   end
 
   def show
-    render json: @review, status: :ok, each_serializer: ReviewSerializer, include: %i[user comments tags images]
+    render json: @review,
+           status: :ok,
+           each_serializer: ReviewSerializer,
+           include: [{ comments: :user }, :user, :house, :tags, :images]
   end
 
   def update

@@ -8,7 +8,7 @@ export interface Bookmark {
 export interface Comment {
   id?: number
   content: string
-  userId: number | undefined
+  user: UserData
   reviewId: number
 }
 
@@ -138,7 +138,7 @@ export interface ReviewData {
   content: string
   date: Date
   user: UserData
-  houseId: number
+  house: HouseData
   evaluation: number
   createdAt: Date
   updatedAt: Date
