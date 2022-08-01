@@ -25,6 +25,7 @@ class Api::V1::ReviewsController < ApplicationController
 
   def update
     if @review.update(review_params)
+      @review.save_tag(@tag_list)
       response_success(:review, :update)
     else
       render json: @review.errors, status: :unprocessable_entity
