@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 // MUIのimport
@@ -23,7 +23,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 // interfaceのimport
-import { HouseData, Tag } from 'interfaces/index';
+import { HouseData, TagSearch } from 'interfaces/index';
 
 // apiを叩く関数のimport
 import { updateHouse } from 'lib/api/house';
@@ -56,6 +56,7 @@ const HouseEdit: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [house] = useState<HouseData>(location.state as HouseData);
+  const [tags, setTags] = useState<string>('');
   const [previewImage, setPreviewImage] = useState<File>();
   const [isFileTypeError, setIsFileTypeError] = useState(false);
 
@@ -77,7 +78,6 @@ const HouseEdit: React.FC = () => {
             bath,
             shopping,
             note,
-            tags
           } = data;
     const formData = new FormData();
 
@@ -105,8 +105,6 @@ const HouseEdit: React.FC = () => {
       const setTag = tags.toString().replace(/,/g," ")
       formData.append('tags', setTag);
     }
-    // tags: Tag[] | undefined
-    // console.log(...formData.entries());
     return formData
   }
 
@@ -114,7 +112,6 @@ const HouseEdit: React.FC = () => {
     const id = house.id.toString();
     const formData =  createFormData(data);
     try {
-      // console.log(...formData.entries());
       const res = await updateHouse(id, formData);
       if (res.status === 200) {
         navigate(`/houses/${id}`, { replace: true })
@@ -149,14 +146,18 @@ const HouseEdit: React.FC = () => {
     setPreviewImage(undefined);
   };
 
-  const returnTags = (taglist: Tag[] |  undefined) => {
+  const returnTags = (taglist: TagSearch[] |  undefined) => {
     if (taglist) {
       const tagNames = taglist.map(tag => tag.name);
       // 配列要素をstringで展開し、,を除いたものを返す
       const tags: string = tagNames.toString().replace(/,/g," ");
-      return tags
+      setTags(tags);
     }
   };
+
+  useEffect(() => {
+    returnTags(house.tags);
+  },[])
 
   return (
     <form onSubmit={handleSubmit(handleUpdateHouse)}>
@@ -370,17 +371,12 @@ const HouseEdit: React.FC = () => {
               />
             )}
           />
-          <Controller
-            name='tags'
-            control={control}
-            // defaultValue={ house.tags }
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label='タグ'
-                defaultValue={returnTags(house.tags)}
-              />
-            )}
+          <TextField
+            label='タグ'
+            value={tags}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              setTags(event.target.value)
+            }
           />
           <ImageBox>
             <ImageList cols={2} rowHeight={220} sx={{ p:1 }}>
