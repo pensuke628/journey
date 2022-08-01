@@ -289,10 +289,10 @@ const HouseDetail: React.FC<Props> = (props) => {
         <Box sx={{ display: 'flex' }}>
           <LocalOfferOutlinedIcon/>
           {
-            tags?.map(tag => {
+            tags?.map((tag, index) => {
               return (
                 <CustomTag
-                  key={tag.id}
+                  key={index}
                   text={tag.name}
                   onClick={(event)=> {
                     handleTagSearch(event);

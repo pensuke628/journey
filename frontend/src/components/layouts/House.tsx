@@ -20,7 +20,7 @@ import BookmarkButton from 'components/utils/BookmarkButton';
 
 import { AuthContext, BookmarkContext } from 'App';
 
-import {HouseData, Tag} from 'interfaces/index'
+import {HouseData, TagSearch} from 'interfaces/index'
 
 type Props = {
   id: number,
@@ -29,7 +29,7 @@ type Props = {
   image: string,
   bookmark: () => void,
   unbookmark: () => void,
-  tags: Tag[] | undefined,
+  tags: TagSearch[] | undefined,
   setState?: Function
 }
 
@@ -93,10 +93,10 @@ const House: React.FC<Props> = (props) => {
               <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
                 <LocalOfferOutlinedIcon/>
                 {
-                  props.tags?.map(tag => {
+                  props.tags?.map((tag, index) => {
                     return (
                       <CustomTag
-                        key={tag.id}
+                        key={index}
                         text={tag.name}
                         onClick={(event)=> {
                           handleTagSearch(event);

@@ -65,7 +65,7 @@ export interface HouseData {
   bath: string
   shopping: string
   note: string
-  tags: Tag[] | undefined
+  tags: TagSearch[] | undefined
 }
 
 export interface Image {
@@ -130,6 +130,8 @@ export interface ReviewParams {
 // 口コミ修正
 export interface ReviewUpdateParams {
   content: string
+  evaluation: number
+  tags: TagSearch[] | undefined
 }
 
 // 口コミ
@@ -143,7 +145,7 @@ export interface ReviewData {
   createdAt: Date
   updatedAt: Date
   comments: Comment[]
-  tags: Tag[] | undefined
+  tags: TagSearch[] | undefined
   images: Image[]
 }
 

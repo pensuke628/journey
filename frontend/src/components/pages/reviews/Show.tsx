@@ -32,7 +32,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { AuthContext, LikeContext, OwnerContext } from 'App';
-import { ReviewUpdateParams, ReviewData, Comment, CommentUpdateParams, Notification } from 'interfaces/index';
+import { ReviewUpdateParams, ReviewData, Comment, CommentUpdateParams, Notification, TagSearch } from 'interfaces/index';
 
 import { getReview, updateReview, destroyReview } from 'lib/api/review';
 import { ReviewUpdateSchema } from 'schema/review';
@@ -43,7 +43,6 @@ import { createNotification } from 'lib/api/notification';
 
 const styles = {
   replybox: {
-    // display: 'flex',
     margin: '1rem'
   },
   replyboxicon: {
@@ -65,6 +64,17 @@ const styles = {
 }
 
 const ReviewShow: React.FC = () => {
+
+  type Image = {
+    id: number,
+    image: {
+      url: string
+    },
+    reviewId: number,
+    createdAt: Date,
+    updatedAt: Date,
+  }
+
   const InitialReview: ReviewData = {
     id: 0,
     content: '',
@@ -122,36 +132,27 @@ const ReviewShow: React.FC = () => {
     images: [],
   }
 
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<ReviewUpdateParams>({
-    resolver: yupResolver(ReviewUpdateSchema)
-  });
-
   const navigate = useNavigate();
   const { isSignedIn, currentUser } = useContext(AuthContext);
   const { likingReviews, setLikingReviews } = useContext(LikeContext);
   const { owneredHouses } = useContext(OwnerContext);
   const query = useParams<{ id: string }>();
-
-  type Image = {
-    id: number,
-    image: {
-      url: string
-    },
-    reviewId: number,
-    createdAt: Date,
-    updatedAt: Date,
-  }
   const [review, setReview] = useState<ReviewData>(InitialReview);
   const [reviewComments, setReviewComments] = useState<Comment[]>([]);
   const [reviewImages, setReviewImages] = useState<Image[]>([]);
+  const [reviewTags, setReviewTags] = useState<string>('');
   const [comment, setComment] = useState<string>('');
   const [editComment, setEditComment] = useState<boolean>(false);
   const [editViewOpen, setEditViewOpen] = useState<boolean>(false);
   const [commentViewOpen, setCommentViewOpen] = useState<boolean>(false);
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<ReviewUpdateParams>({
+    resolver: yupResolver(ReviewUpdateSchema),
+  });
   
   const fetch = async() => {
     try {
@@ -161,10 +162,25 @@ const ReviewShow: React.FC = () => {
         setReview(res.data);
         setReviewComments(res.data.comments);
         setReviewImages(res.data.images);
+        returnTags(res.data.tags);
       }
     } catch (error) {
       console.log(error);
     }
+  }
+
+  const createFormData = (data: ReviewUpdateParams) => {
+    const { content,
+            evaluation
+          } = data;
+    const formData = new FormData();
+
+    formData.append('content', content);
+    formData.append('evaluation', String(evaluation));
+    if (reviewTags) {
+      formData.append('tags', reviewTags);
+    }
+    return formData
   }
 
   const handleCreateLike = async() => {
@@ -188,7 +204,7 @@ const ReviewShow: React.FC = () => {
       const res = await like(params);
       if (res.status === 200) {
         setLikingReviews([...likingReviews, res.data.data]);
-        const notification = await createNotification(notificationParams);
+        createNotification(notificationParams);
       }
     } catch (error) {
       console.log(error);
@@ -212,7 +228,6 @@ const ReviewShow: React.FC = () => {
 
   const handleEdit = () => {
     setEditViewOpen(!editViewOpen);
-    // console.log('Edit Start');
   }
 
   const handleDestroy = async() => {
@@ -262,10 +277,8 @@ const ReviewShow: React.FC = () => {
 
       try {
         const res = await createComment(params);
-        // console.log(res);
         if (res.status === 200) {
           setReviewComments([res.data.comment, ...reviewComments ]);
-          // console.log('コメントを作成しました')
           setCommentViewOpen(false);
 
           const notificationParams: Notification = {
@@ -280,12 +293,7 @@ const ReviewShow: React.FC = () => {
             updatedAt: undefined
           };
 
-          const notification = await createNotification(notificationParams);
-          // if (notification.status === 200) {
-          //   console.log('コメント通知を作成しました');
-          // } else {
-          //   console.log('通知作成に失敗しました');
-          // }
+          createNotification(notificationParams);
         }
       } catch (error) {
         console.log(error);
@@ -294,14 +302,12 @@ const ReviewShow: React.FC = () => {
   }
 
   const handleUpdateComment = async(id: number | undefined) => {
-    // console.log('Comment Update');
     const params: CommentUpdateParams = {
       content: comment,
       reviewId: review.id
     }
     try {
       const res = await updateComment(id, params);
-      // console.log(res);
       if (res.status === 200) {
         const filtercomment = reviewComments.filter(comment => comment.id !== id)
         setReview({...review, comments: filtercomment})
@@ -333,14 +339,17 @@ const ReviewShow: React.FC = () => {
     }
   }
 
-  const onSubmit = async(data: ReviewUpdateParams ) => {
-    // console.log('Update Start');
-    // console.log(data);
+  const onSubmit = async(data: ReviewUpdateParams) => {
+    const formData = createFormData(data);
+    console.log(data);
     try {
-      const res = await updateReview(query.id, data);
-      // console.log(res);
+      const res = await updateReview(query.id, formData);
+      console.log(res);
       if (res.status === 200) {
         setReview(review => ({...review, content: data.content }));
+        setReview(review => ({...review, evaluation: Number(data.evaluation) }));
+        const setTagsData: TagSearch[] = tagToArray(reviewTags)
+        setReview(review => ({...review, tags: setTagsData}));
         setEditViewOpen(false);
       }
     } catch (error) {
@@ -367,6 +376,25 @@ const ReviewShow: React.FC = () => {
     let year: string = (newdate.getFullYear()).toString();
     let month: string = (1 + newdate.getMonth()).toString();
     return `${year}年${month}月`
+  };
+
+  const returnTags = (taglist: TagSearch[] |  undefined) => {
+    if (taglist) {
+      const tagNames = taglist.map(tag => tag.name);
+      // 配列要素をstringで展開し、,を除いたものを返す
+      const tags: string = tagNames.toString().replace(/,/g," ");
+      setReviewTags(tags);
+    }
+  };
+
+  // string型配列のタグをオブジェクト型配列に変換する
+  const tagToArray = (Tags: string) => {
+    const tagsArray = Tags.split(' ');
+    const tagsArrayOfObject:TagSearch[] = [];
+    tagsArray.forEach((tag: string) => {
+      tagsArrayOfObject.push({name: tag})
+    })
+    return tagsArrayOfObject
   }
 
   return (
@@ -374,6 +402,7 @@ const ReviewShow: React.FC = () => {
       {
         editViewOpen ? (
           <form onSubmit={handleSubmit(onSubmit)}>
+            <h3>口コミを編集する</h3>
             <Controller
               name='content'
               control={control}
@@ -389,12 +418,34 @@ const ReviewShow: React.FC = () => {
                 />
               )}
             />
+            <Controller
+              name='evaluation'
+              control={control}
+              defaultValue={review.evaluation}
+              render={( props ) => (
+                <Rating
+                  onChange={props.field.onChange}
+                  value={Number(props.field.value)}
+                  precision={0.5}
+                />
+              )}
+            />
+            <TextField
+              label='タグ'
+              fullWidth
+              helperText='複数タグを紐付けたい場合は、半角スペースで区切ってください'
+              value={reviewTags}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => 
+                setReviewTags(event.target.value)
+              }
+            />
             <Box sx={{ display: 'flex' }}>
               <Button
                 variant='contained'
                 color='success'
                 startIcon={<EditIcon/>}
                 onClick={handleEdit}
+                sx={{ m:1 }}
               >
                 編集を終了する
               </Button>
@@ -402,6 +453,7 @@ const ReviewShow: React.FC = () => {
                 type='submit'
                 variant='contained'
                 startIcon={<AutorenewIcon/>}
+                sx={{ m:1 }}
               >
                 更新する
               </Button>
@@ -464,10 +516,10 @@ const ReviewShow: React.FC = () => {
                   </Typography>
                   <Box sx={{ display: 'flex' }}>
                   {
-                    review.tags?.map((tag) => {
+                    review.tags?.map((tag, index) => {
                       return (
                         <CustomTag
-                          key={tag.id}
+                          key={index}
                           text={tag.name}
                           onClick={(event)=> {
                             handleTagSearch(event);
