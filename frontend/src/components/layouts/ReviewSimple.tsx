@@ -12,15 +12,15 @@ import IconButton from '@mui/material/IconButton';
 import Rating from '@mui/material/Rating';
 import Typography  from '@mui/material/Typography';
 
-// MUIIconsのimport
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import MessageIcon from '@mui/icons-material/Message';
-
+// componentのimport
 import CustomTag from 'components/utils/Tag';
 
+// MUIIconsのimport
+import FavoriteIcon from '@mui/icons-material/Favorite';
+
+
 // interfaceのimport
-import { Notification, ReviewData, Tag, UserData } from 'interfaces/index';
+import { HouseData, Notification, ReviewData, TagSearch, UserData } from 'interfaces/index';
 
 //  Contextのimport
 import { AuthContext, LikeContext } from 'App';
@@ -35,7 +35,8 @@ type Props = {
   date: Date
   evaluation: number | null
   user: UserData
-  tags: Tag[] | undefined
+  house: HouseData
+  tags: TagSearch[] | undefined
   setState: Function
 }
 
@@ -43,7 +44,7 @@ const ReviewSimple: React.FC<Props> = (props) => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser } = useContext(AuthContext);
+  const { isSignedIn, currentUser } = useContext(AuthContext);
   const {likingReviews, setLikingReviews} = useContext(LikeContext);
 
   const viewDate = (date: Date) => {
@@ -82,15 +83,8 @@ const ReviewSimple: React.FC<Props> = (props) => {
     try {
       const res = await like(params);
       if (res.status === 200) {
-        console.log('いいねに成功');
-        // console.log(res.data.data);
         setLikingReviews([...likingReviews, res.data.data]);
-        const notification = await createNotification(notificationParams);
-        if (notification.status === 200) {
-          console.log('いいね通知を作成しました');
-        } else {
-          console.log('通知作成に失敗しました');
-        }
+        createNotification(notificationParams);
       }
     } catch (error) {
       console.log(error);
@@ -106,7 +100,6 @@ const ReviewSimple: React.FC<Props> = (props) => {
       if (res.status === 200) {
         const newLikingReview = likingReviews.filter((likedReview: ReviewData ) => likedReview.id !== props.id );
         setLikingReviews([...newLikingReview]);
-        console.log('いいね解除に成功');
       }
     } catch (error) {
       console.log(error);
@@ -140,8 +133,34 @@ const ReviewSimple: React.FC<Props> = (props) => {
             src={props.user.avatar.url}
           />
         }
-        title={`${props.user.name}さん`}
-        subheader={`${viewDate(props.date)}訪問`}
+        title={
+          <Typography
+            component={RouterLink}
+            to={`/users/${props.user.id}`}
+            color='inherit'
+            sx={{ textDecoration: 'none' }}
+          >
+            {props.user.name}さん
+          </Typography>
+        }
+        subheader={
+          <Box sx={{ display: 'flex' }}>
+            <Typography
+              component={RouterLink}
+              to={`/houses/${props.house.id}`}
+              color='inherit'
+              sx={{
+                textDecoration: 'none',
+                mr:1
+              }}
+            >
+              {props.house.name}
+            </Typography>
+            <Typography>
+              {viewDate(props.date)}訪問
+            </Typography>
+          </Box>
+        }
       />
       <CardContent>
         <Box
@@ -166,10 +185,10 @@ const ReviewSimple: React.FC<Props> = (props) => {
           </Typography>
           <Box sx={{ display: 'flex' }}>
           {
-            props.tags?.map((tag) => {
+            props.tags?.map((tag, index) => {
               return (
                 <CustomTag
-                  key={tag.id}
+                  key={index}
                   text={tag.name}
                   onClick={(event)=> {
                     handleTagSearch(event);
@@ -179,24 +198,26 @@ const ReviewSimple: React.FC<Props> = (props) => {
             })
           }
           </Box>
-          <CardActions>
-            { isLikedReview(props.id) ? (
-                <IconButton
-                  onClick={handleDestroyLike}
-                >
-                  <FavoriteIcon sx={{ color: 'red' }}/>
-                </IconButton> 
-              ) : (
-                <IconButton
-                  onClick={handleCreateLike}
-                >
-                  <FavoriteIcon/>
-                </IconButton> 
-              )
-            }
-            <IconButton><MessageIcon/></IconButton>
-            <IconButton><DeleteForeverIcon/></IconButton>
-          </CardActions>
+          {
+            isSignedIn &&
+              <CardActions>
+                {
+                  isLikedReview(props.id) ? (
+                    <IconButton
+                      onClick={handleDestroyLike}
+                    >
+                      <FavoriteIcon sx={{ color: 'red' }}/>
+                    </IconButton> 
+                  ) : (
+                    <IconButton
+                      onClick={handleCreateLike}
+                    >
+                      <FavoriteIcon/>
+                    </IconButton> 
+                  )
+                }
+              </CardActions>
+          }
         </Box>
       </CardContent>
     </Card>

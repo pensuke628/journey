@@ -100,7 +100,7 @@ const UserShow: React.FC = () => {
     followers: [],
   }
 
-  const { currentUser } = useContext(AuthContext);
+  const { isSignedIn ,currentUser } = useContext(AuthContext);
   const { followingUsers, setFollowingUsers } = useContext(RelationshipContext);
   const query = useParams<{ id: string }>();
 
@@ -178,6 +178,14 @@ const UserShow: React.FC = () => {
       }
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  const IsMutualFollow = () => {
+    if (currentUser?.following.some(member => member === user) && user.following.some(member => member === currentUser)) {
+      return true
+    } else {
+      return false
     }
   }
 
@@ -291,15 +299,20 @@ const UserShow: React.FC = () => {
                                   <FollowButton onClick={userFollow}/>
                                 )
                               }
-                              {/* <Button
-                                component={RouterLink}
-                                to={`/users/${currentUser?.id}/message_rooms`}
-                                variant="contained"
-                                startIcon={<MailIcon />}
-                                style={styles.actionbutton}
-                              >
-                                メッセージを送る
-                              </Button> */}
+                              {
+                                // 相互にフォローしている場合のみ、メッセージを送るボタンを表示する
+                                (followingUsers.some(member => member.id === user.id)) && 
+                                (user.following.some(member => member.id === currentUser?.id)) &&
+                                  <Button
+                                    component={RouterLink}
+                                    to={`/users/${currentUser?.id}/message_rooms`}
+                                    variant="contained"
+                                    startIcon={<MailIcon />}
+                                    style={styles.actionbutton}
+                                    >
+                                    メッセージを送る
+                                  </Button>
+                              }
                             </FlexBox>
                           )
                         }
@@ -328,6 +341,7 @@ const UserShow: React.FC = () => {
                             date={review.date}
                             evaluation={review.evaluation}
                             user={user}
+                            house={review.house}
                             tags={review.tags}
                             setState={DummyFuction}
                           />
@@ -364,7 +378,7 @@ const UserShow: React.FC = () => {
                                 reviews={user.reviews}
                                 likes={user.likes}
                                 following={user.following}
-                                followers={user.following}
+                                followers={user.followers}
                               />
                             </Grid>
                           ))
@@ -401,7 +415,7 @@ const UserShow: React.FC = () => {
                                 reviews={user.reviews}
                                 likes={user.likes}
                                 following={user.following}
-                                followers={user.following}
+                                followers={user.followers}
                               />
                             </Grid>
                           ))

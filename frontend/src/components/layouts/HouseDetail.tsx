@@ -160,7 +160,10 @@ const HouseDetail: React.FC<Props> = (props) => {
     reset,
     formState: { errors },
   } = useForm<ReviewParams>({
-    defaultValues: { tags: [''] },
+    defaultValues: {
+      date: new Date(),
+      tags: []
+    },
     resolver: yupResolver(ReviewSchema),
   });
   const navigate = useNavigate();
@@ -187,15 +190,12 @@ const HouseDetail: React.FC<Props> = (props) => {
   };
 
   const onSubmit = async(data: ReviewParams) => {
-    console.log(images[0]);
     try {
       const res = await createReview(data);
       console.log(res);
       if (res.status === 200) {
-        console.log('口コミ作成に成功しました');
-
         const formData = new FormData();
-        formData.append('review_id', res.data.review.id)
+        formData.append('review_id', res.data.id)
 
         // 繰り返し処理の箇所は後日修正する
         if (images.length >= 1 ) {
@@ -210,13 +210,13 @@ const HouseDetail: React.FC<Props> = (props) => {
             }
           }
         } 
-
-        setReviews([res.data.review, ...reviews]);
+        setReviews([res.data, ...reviews]);
         setReviewFormOpen(false);
         const notificationParams: Notification = {
-          senderId: res.data.review.userId,
+          senderId: res.data.user.id,
+          // backendでフォロワーのIDを代入する処理を行うため、仮のreceiverIDを設ける
           receiverId: 1,
-          reviewId: res.data.review.id,
+          reviewId: res.data.id,
           commentId: undefined,
           messageId: undefined,
           act: 'create',
@@ -224,12 +224,7 @@ const HouseDetail: React.FC<Props> = (props) => {
           createdAt: undefined,
           updatedAt: undefined
         };
-        const notification = await followerNotification(notificationParams);
-        if (notification.status === 200) {
-          console.log('フォローワーに通知を作成しました');
-        } else {
-          console.log('通知作成に失敗しました');
-        }
+        followerNotification(notificationParams);
         reset();
       }
     } catch (error) {
@@ -289,10 +284,10 @@ const HouseDetail: React.FC<Props> = (props) => {
         <Box sx={{ display: 'flex' }}>
           <LocalOfferOutlinedIcon/>
           {
-            tags?.map(tag => {
+            tags?.map((tag, index) => {
               return (
                 <CustomTag
-                  key={tag.id}
+                  key={index}
                   text={tag.name}
                   onClick={(event)=> {
                     handleTagSearch(event);
@@ -538,6 +533,7 @@ const HouseDetail: React.FC<Props> = (props) => {
                     content={review.content}
                     date={review.date}
                     user={review.user}
+                    house={review.house}
                     evaluation={review.evaluation}
                     tags={review.tags}
                     setState={DummyFuction}

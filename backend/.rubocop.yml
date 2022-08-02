@@ -39,7 +39,7 @@ Metrics/BlockLength:
 
 # 20 行超えるのは migration ファイル以外滅多に無い
 Metrics/MethodLength:
-  Max: 20
+  Max: 30
 
 # 日本語でのコメントを許可
 Style/AsciiComments:

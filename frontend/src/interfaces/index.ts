@@ -8,7 +8,7 @@ export interface Bookmark {
 export interface Comment {
   id?: number
   content: string
-  userId: number | undefined
+  user: UserData
   reviewId: number
 }
 
@@ -65,7 +65,7 @@ export interface HouseData {
   bath: string
   shopping: string
   note: string
-  tags: Tag[] | undefined
+  tags: TagSearch[] | undefined
 }
 
 export interface Image {
@@ -130,6 +130,8 @@ export interface ReviewParams {
 // 口コミ修正
 export interface ReviewUpdateParams {
   content: string
+  evaluation: number
+  tags: TagSearch[] | undefined
 }
 
 // 口コミ
@@ -138,12 +140,12 @@ export interface ReviewData {
   content: string
   date: Date
   user: UserData
-  houseId: number
+  house: HouseData
   evaluation: number
   createdAt: Date
   updatedAt: Date
   comments: Comment[]
-  tags: Tag[] | undefined
+  tags: TagSearch[] | undefined
   images: Image[]
 }
 

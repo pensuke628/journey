@@ -1,7 +1,7 @@
 import client from 'lib/api/client';
 import Cookies from 'js-cookie';
 
-import { ReviewParams, ReviewUpdateParams } from 'interfaces/index';
+import { ReviewParams } from 'interfaces/index';
 
 export const getReview = (id: string | undefined) => {
   return client.get(`reviews/${id}`)
@@ -20,7 +20,7 @@ export const createReview = (data: ReviewParams) => {
 }
 
 // 口コミの内容を更新する
-export const updateReview = (id: string | undefined, data: ReviewUpdateParams) => {
+export const updateReview = (id: string | undefined, data: FormData) => {
   return client.put(`reviews/${id}`, data, {
     headers: {
       'access-token': Cookies.get('_access_token') || '',
