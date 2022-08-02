@@ -36,7 +36,6 @@ import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/NotificationsOutlined';
 import PersonIcon from '@mui/icons-material/Person';
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 // interfaceのimport
@@ -86,6 +85,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
         >
           <img
             src={`${process.env.PUBLIC_URL}/logo.png`}
+            alt=''
             height='100'
           />
         </Link>
@@ -104,17 +104,6 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
             <ListItemText primary={'トップページ'}/>
           </ListItemButton>
         </ListItem>
-        {/* <ListItem disablePadding>
-          <ListItemButton
-            component={RouterLink}
-            to='/about'
-          >
-            <ListItemIcon>
-              <QuestionMarkIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Journeyとは'}/>
-          </ListItemButton>
-        </ListItem> */}
       </List>
     </div>
   );
@@ -290,17 +279,6 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
                         </Typography>
                       を作成しました</Typography>
                      }
-                    {/* {
-                      if (notification.action === 'like') {    
-                        return (
-                          <Typography>{notification.senderId}さんが</Typography>
-                        );
-                      } else {
-                        return (
-                          <Typography>開発中</Typography>
-                        );
-                      }
-                    } */}
                   </MenuItem>
                   )
                 })
@@ -335,9 +313,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
                 onClick={handleCloseUserMenu}
               >
                 <ListItemIcon>
-                  <Badge badgeContent={1} color='error'>
-                    <MailIcon/>
-                  </Badge>
+                  <MailIcon/>
                 </ListItemIcon>
                 <ListItemText>メッセージ</ListItemText>
               </MenuItem>
@@ -521,6 +497,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
             >
               <img
                 src={`${process.env.PUBLIC_URL}/logo.png`}
+                alt=''
                 height='100'
               />
             </Link>
@@ -530,19 +507,17 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
         <Box
           component='nav'
           sx={{
-            // width: { md: drawerWidth },
             flexShrink: { md: 0 }
           }}
           aria-label='mailbox folders'
         >
           {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
           <Drawer
-            // container={container}
             variant="temporary"
             open={mobileOpen}
             onClose={handleDrawerToggle}
             ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
+              keepMounted: true,
             }}
             sx={{
               display: { xs: 'block', md: 'none' },
@@ -554,7 +529,6 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
           <Drawer
             variant="permanent"
             sx={{
-              // display: { xs: 'none', md: 'block' },
               display: 'none',
               '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
             }}
@@ -563,13 +537,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
             {drawer}
           </Drawer>
         </Box>
-        <Box
-          // sx={{
-            // width: { md: `calc(100% - ${drawerWidth}px)` },
-            // mt: '100px',
-            // mx: 'auto'
-          // }}
-        >
+        <Box>
           {children}
         </Box>
       <Paper
