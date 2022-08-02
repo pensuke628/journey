@@ -21,10 +21,10 @@ class Api::V1::NotificationsController < ApplicationController
   end
 
   def follower_notification
-    notification = Notification.new(notification_params)
     current_user = User.find(params[:sender_id])
     followers = current_user.followers
     followers.each do |follower|
+      notification = Notification.new(notification_params)
       notification.receiver_id = follower.id
       notification.save
     end
