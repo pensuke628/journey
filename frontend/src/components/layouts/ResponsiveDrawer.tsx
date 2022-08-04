@@ -46,6 +46,7 @@ import { AuthContext, BookmarkContext, LikeContext ,NotificationContext, OwnerCo
 
 // apiを叩く関数のimport
 import { signIn, signOut } from 'lib/api/auth';
+import { updateNotifications } from 'lib/api/notification';
 
 const drawerWidth = 240;
 
@@ -133,16 +134,20 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
       setAnchorElSignup(null);
     };
 
-    const handleCloseNotifications= () => {
+    const handleCloseNotifications = () => {
 
-      const checkedNotifications = notifications.map(value => {return value;
+      const checkedNotifications = notifications.map((value :Notification) => {
+        return value;
       });
-      checkedNotifications.forEach(notification => {
-        notification['checked'] = true;
-      })
-      // DBのデータを書き換える処理を追加する必要がある
+      // 通知を全て既読にする
+      updateNotifications( { id: currentUser?.id } )
 
+      // 既読にした通知をstateにセットする
+      checkedNotifications.forEach((notification: Notification) => {
+        notification['checked'] = true
+      })
       setNotifications([...checkedNotifications]);
+
       setAnchorElNotification(null);
     };
 

@@ -102,6 +102,7 @@ export interface MessageRoom {
 
 // 通知
 export interface Notification {
+  id?: number,
   senderId: number | undefined,
   receiverId: number | undefined,
   reviewId : number | undefined,
@@ -111,6 +112,10 @@ export interface Notification {
   checked: boolean | undefined,
   createdAt: Date | undefined,
   updatedAt: Date | undefined,
+}
+
+export interface NotificationUpdate {
+  checked: boolean,
 }
 
 export interface Owner {
