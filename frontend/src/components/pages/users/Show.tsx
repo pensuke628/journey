@@ -37,6 +37,7 @@ import { AuthContext, RelationshipContext } from 'App';
 import { getUser } from 'lib/api/user';
 import { createNotification } from 'lib/api/notification';
 import { follow, unfollow } from 'lib/api/relationships';
+import { resetNotifications } from 'lib/api/notification';
 
 // default画像のimport
 import defaultBckgroundImage from 'defaultBackgroundImage.png';
@@ -201,6 +202,10 @@ const UserShow: React.FC = () => {
     console.log('');
   }
 
+  const handleResetNotification = () => {
+    resetNotifications({ id: currentUser?.id })
+  }
+
   return (
     <>
       { userIsTrue && user ? (
@@ -288,6 +293,14 @@ const UserShow: React.FC = () => {
                               onClick={editUser}
                             >
                               プロフィール編集
+                            </Button>
+                            <Button
+                              key='five'
+                              variant="contained"
+                              style={styles.actionbutton}
+                              onClick={handleResetNotification}
+                            >
+                              通知リセット（debag）
                             </Button>
                           </FlexBox>
                           ) : (

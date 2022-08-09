@@ -33,3 +33,25 @@ export const followerNotification = (data: Notification) => {
     }
   });
 }
+
+// 通知を既読にする
+export const updateNotifications = (data: {id: number | undefined}) => {
+  return client.put('notifications/checked_notification', data, {
+    headers: {
+      'access-token': Cookies.get('_access_token') || '',
+      'client': Cookies.get('_client') || '',
+      'uid': Cookies.get('_uid') || '',
+    }
+  })
+}
+
+// 通知を未読にする（デバッグ用）
+export const resetNotifications = (data: { id: number | undefined }) => {
+  return client.put('notifications/reset_notification', data, {
+    headers: {
+      'access-token': Cookies.get('_access_token') || '',
+      'client': Cookies.get('_client') || '',
+      'uid': Cookies.get('_uid') || '',
+    }
+  })
+}
