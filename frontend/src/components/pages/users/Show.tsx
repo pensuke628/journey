@@ -28,7 +28,7 @@ import FollowButton from 'components/utils/FollowButton';
 import UnfollowButton from 'components/utils/UnfollowButton';
 
 // interfaceのimport
-import { Follow, Notification, UserData, ReviewData } from 'interfaces/index';
+import { Follow, NotificationCreateParams, UserData, ReviewData } from 'interfaces/index';
 
 //  Contextのimport
 import { AuthContext, RelationshipContext } from 'App';
@@ -134,7 +134,7 @@ const UserShow: React.FC = () => {
       followedId: user.id
     }
 
-    const notificationParams: Notification = {
+    const notificationParams: NotificationCreateParams = {
       senderId: currentUser?.id,
       receiverId: user.id,
       reviewId: undefined,
