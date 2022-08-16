@@ -2,10 +2,14 @@ class Api::V1::NotificationsController < ApplicationController
   before_action :authenticate_api_v1_user!
 
   def index
+    # 自分宛の通知を日付が新しい順で最大9件返す
+    notifications = Notification.where(receiver_id: current_api_v1_user.id)
+                                .order_new
+                                .limit(9)
+                                .as_json(except: [:sender_id], include: 'sender')
     render json: {
-      status: 200,
-      notifications: current_api_v1_user.passive_notifications.order_new.limit(9)
-      # 自分宛の通知を日付が新しい順で最大9件返す
+      status: :ok,
+      notifications: notifications
     }
   end
 

@@ -1,7 +1,7 @@
 import client from 'lib/api/client';
 import Cookies from 'js-cookie';
 
-import { Notification } from 'interfaces/index';
+import { NotificationCreateParams } from 'interfaces/index';
 
 // 自分宛の全ての通知を取得
 export const getNotifications = () => {
@@ -14,7 +14,7 @@ export const getNotifications = () => {
   })
 }
 
-export const createNotification = (data: Notification) => {
+export const createNotification = (data: NotificationCreateParams) => {
   return client.post('notifications', data, {
     headers: {
       'access-token': Cookies.get('_access_token') || '',
@@ -24,7 +24,7 @@ export const createNotification = (data: Notification) => {
   });
 }
 
-export const followerNotification = (data: Notification) => {
+export const followerNotification = (data: NotificationCreateParams) => {
   return client.post('notifications/follower_notification', data, {
     headers: {
       'access-token': Cookies.get('_access_token') || '',
