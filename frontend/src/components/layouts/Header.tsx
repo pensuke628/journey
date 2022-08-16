@@ -157,7 +157,7 @@ const Header: React.FC = () => {
                     }}
                   >
                      { (notification.act === 'comment') && 
-                      <Typography>{notification.senderId}さんが
+                      <Typography>{notification.sender.name}さんが
                         <Typography
                           component={RouterLink}
                           to={`reviews/${notification.reviewId}`}
@@ -167,10 +167,10 @@ const Header: React.FC = () => {
                       にコメントしました</Typography>
                     }
                      { (notification.act === 'follow') &&
-                      <Typography>{notification.senderId}さんがあなたをフォローしました</Typography> 
+                      <Typography>{notification.sender.name}さんがあなたをフォローしました</Typography> 
                      }
                      { (notification.act === 'like') &&
-                      <Typography>{notification.senderId}さんが
+                      <Typography>{notification.sender.name}さんが
                         <Typography
                           component={RouterLink}
                           to={`reviews/${notification.reviewId}`}
@@ -179,10 +179,10 @@ const Header: React.FC = () => {
                         </Typography>
                       をいいねしました</Typography> }
                      { (notification.act === 'message') &&
-                      <Typography>{notification.senderId}さんがメッセージを送信しました</Typography>
+                      <Typography>{notification.sender.name}さんがメッセージを送信しました</Typography>
                      }
                      { (notification.act === 'review') &&
-                      <Typography>{notification.senderId}さんが
+                      <Typography>{notification.sender.name}さんが
                         <Typography
                           component={RouterLink}
                           to={`reviews/${notification.reviewId}`}
