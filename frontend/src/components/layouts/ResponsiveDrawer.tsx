@@ -46,6 +46,7 @@ import { AuthContext, BookmarkContext, LikeContext ,NotificationContext, OwnerCo
 
 // apiを叩く関数のimport
 import { signIn, signOut } from 'lib/api/auth';
+import { updateNotifications } from 'lib/api/notification';
 
 const drawerWidth = 240;
 
@@ -133,16 +134,20 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
       setAnchorElSignup(null);
     };
 
-    const handleCloseNotifications= () => {
+    const handleCloseNotifications = () => {
 
-      const checkedNotifications = notifications.map(value => {return value;
+      const checkedNotifications = notifications.map((value :Notification) => {
+        return value;
       });
-      checkedNotifications.forEach(notification => {
-        notification['checked'] = true;
-      })
-      // DBのデータを書き換える処理を追加する必要がある
+      // 通知を全て既読にする
+      updateNotifications( { id: currentUser?.id } )
 
+      // 既読にした通知をstateにセットする
+      checkedNotifications.forEach((notification: Notification) => {
+        notification['checked'] = true
+      })
       setNotifications([...checkedNotifications]);
+
       setAnchorElNotification(null);
     };
 
@@ -245,39 +250,127 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
                     }}
                   >
                      { (notification.act === 'comment') && 
-                      <Typography>{notification.senderId}さんが
-                        <Typography
-                          component={RouterLink}
-                          to={`reviews/${notification.reviewId}`}
-                        >
-                         あなたの投稿{notification.reviewId}
-                        </Typography>
-                      にコメントしました</Typography>
+                        <Box sx={{ display: 'flex'}}>
+                          <Avatar
+                            component={RouterLink}
+                            to={`/users/${notification.sender.id}`}
+                            src={notification.sender.avatar.url}
+                            sx={{ mx:1 }}
+                          />
+                          <Typography>
+                            <Typography
+                              component={RouterLink}
+                              to={`users/${notification.sender.id}`}
+                            >
+                              {notification.sender.name}
+                            </Typography>
+                            さんが
+                            <Typography
+                              component={RouterLink}
+                              to={`reviews/${notification.reviewId}`}
+                            >
+                            あなたの投稿{notification.reviewId}
+                            </Typography>
+                            にコメントしました
+                          </Typography>
+                        </Box>
                     }
                      { (notification.act === 'follow') &&
-                      <Typography>{notification.senderId}さんがあなたをフォローしました</Typography> 
+                      <Box sx={{ display: 'flex' }}>
+                        <Avatar
+                          component={RouterLink}
+                          to={`/users/${notification.sender.id}`}
+                          src={notification.sender.avatar.url}
+                          sx={{ mx:1 }}
+                        />
+                        <Typography>
+                          <Typography
+                            component={RouterLink}
+                            to={`users/${notification.sender.id}`}
+                          >
+                            {notification.sender.name}
+                          </Typography>
+                          さんがあなたをフォローしました
+                        </Typography>
+                      </Box>
                      }
                      { (notification.act === 'like') &&
-                      <Typography>{notification.senderId}さんが
-                        <Typography
+                      <Box sx={{ display: 'flex' }}>
+                        <Avatar
                           component={RouterLink}
-                          to={`reviews/${notification.reviewId}`}
-                        >
-                          あなたの投稿
+                          to={`/users/${notification.sender.id}`}
+                          src={notification.sender.avatar.url}
+                          sx={{ mx:1 }}
+                        />
+                        <Typography>
+                          <Typography
+                            component={RouterLink}
+                            to={`users/${notification.sender.id}`}
+                          >
+                            {notification.sender.name}
+                          </Typography>
+                          さんが
+                          <Typography
+                            component={RouterLink}
+                            to={`reviews/${notification.reviewId}`}
+                          >
+                            あなたの投稿
+                          </Typography>
+                          をいいねしました
                         </Typography>
-                      をいいねしました</Typography> }
+                      </Box>
+                     }
                      { (notification.act === 'message') &&
-                      <Typography>{notification.senderId}さんがメッセージを送信しました</Typography>
+                      <Box sx={{ display: 'flex' }}>
+                        <Avatar
+                          component={RouterLink}
+                          to={`/users/${notification.sender.id}`}
+                          src={notification.sender.avatar.url}
+                          sx={{ mx:1 }}
+                        />
+                        <Typography>
+                          <Typography
+                            component={RouterLink}
+                            to={`users/${notification.sender.id}`}
+                          >
+                            {notification.sender.name}
+                          </Typography>
+                          さんが
+                          <Typography
+                            component={RouterLink}
+                            to={`/users/${currentUser?.id}/message_rooms`}
+                          >
+                            メッセージ
+                          </Typography>
+                          を送信しました
+                        </Typography>
+                      </Box>
                      }
                      { (notification.act === 'review') &&
-                      <Typography>{notification.senderId}さんが
-                        <Typography
+                      <Box sx={{ display: 'flex' }}>
+                        <Avatar
                           component={RouterLink}
-                          to={`reviews/${notification.reviewId}`}
-                        >
-                          口コミ
+                          to={`/users/${notification.sender.id}`}
+                          src={notification.sender.avatar.url}
+                          sx={{ mx:1 }}
+                        />
+                        <Typography>
+                          <Typography
+                            component={RouterLink}
+                            to={`users/${notification.sender.id}`}
+                            >
+                            {notification.sender.name}
+                          </Typography>
+                          さんが
+                          <Typography
+                            component={RouterLink}
+                            to={`reviews/${notification.reviewId}`}
+                            >
+                            口コミ
+                          </Typography>
+                          を作成しました
                         </Typography>
-                      を作成しました</Typography>
+                      </Box>
                      }
                   </MenuItem>
                   )

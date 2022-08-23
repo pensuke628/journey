@@ -45,7 +45,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 // interfaceのimport
-import { Image, Notification, ReviewParams, ReviewData, Tag } from 'interfaces/index';
+import { Image, NotificationCreateParams, ReviewParams, ReviewData, Tag } from 'interfaces/index';
 
 // バリデーションルールのimport
 import { ReviewSchema } from 'schema/review';
@@ -212,7 +212,7 @@ const HouseDetail: React.FC<Props> = (props) => {
         } 
         setReviews([res.data, ...reviews]);
         setReviewFormOpen(false);
-        const notificationParams: Notification = {
+        const notificationParams: NotificationCreateParams = {
           senderId: res.data.user.id,
           // backendでフォロワーのIDを代入する処理を行うため、仮のreceiverIDを設ける
           receiverId: 1,

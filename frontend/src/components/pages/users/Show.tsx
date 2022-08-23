@@ -28,7 +28,7 @@ import FollowButton from 'components/utils/FollowButton';
 import UnfollowButton from 'components/utils/UnfollowButton';
 
 // interfaceのimport
-import { Follow, Notification, UserData, ReviewData } from 'interfaces/index';
+import { Follow, NotificationCreateParams, UserData, ReviewData } from 'interfaces/index';
 
 //  Contextのimport
 import { AuthContext, RelationshipContext } from 'App';
@@ -37,6 +37,7 @@ import { AuthContext, RelationshipContext } from 'App';
 import { getUser } from 'lib/api/user';
 import { createNotification } from 'lib/api/notification';
 import { follow, unfollow } from 'lib/api/relationships';
+import { resetNotifications } from 'lib/api/notification';
 
 // default画像のimport
 import defaultBckgroundImage from 'defaultBackgroundImage.png';
@@ -133,7 +134,7 @@ const UserShow: React.FC = () => {
       followedId: user.id
     }
 
-    const notificationParams: Notification = {
+    const notificationParams: NotificationCreateParams = {
       senderId: currentUser?.id,
       receiverId: user.id,
       reviewId: undefined,
@@ -199,6 +200,10 @@ const UserShow: React.FC = () => {
 
   const DummyFuction = () => {
     console.log('');
+  }
+
+  const handleResetNotification = () => {
+    resetNotifications({ id: currentUser?.id })
   }
 
   return (
@@ -288,6 +293,14 @@ const UserShow: React.FC = () => {
                               onClick={editUser}
                             >
                               プロフィール編集
+                            </Button>
+                            <Button
+                              key='five'
+                              variant="contained"
+                              style={styles.actionbutton}
+                              onClick={handleResetNotification}
+                            >
+                              通知リセット（debag）
                             </Button>
                           </FlexBox>
                           ) : (

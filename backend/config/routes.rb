@@ -38,6 +38,9 @@ Rails.application.routes.draw do
       resources :notifications, only: %i[index create] do
         collection do
           post :follower_notification
+          put :checked_notification
+          # デバッグ用
+          put :reset_notification
         end
       end
       resources :owners, only: %i[index create] do

@@ -32,7 +32,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { AuthContext, LikeContext, OwnerContext } from 'App';
-import { ReviewUpdateParams, ReviewData, Comment, CommentUpdateParams, Notification, TagSearch } from 'interfaces/index';
+import { ReviewUpdateParams, ReviewData, Comment, CommentUpdateParams, NotificationCreateParams, TagSearch } from 'interfaces/index';
 
 import { getReview, updateReview, destroyReview } from 'lib/api/review';
 import { ReviewUpdateSchema } from 'schema/review';
@@ -188,7 +188,7 @@ const ReviewShow: React.FC = () => {
       reviewId: review.id
     };
 
-    const notificationParams: Notification = {
+    const notificationParams: NotificationCreateParams = {
       senderId: currentUser?.id,
       receiverId: review.user.id,
       reviewId: review.id,
@@ -281,7 +281,7 @@ const ReviewShow: React.FC = () => {
           setReviewComments([res.data.comment, ...reviewComments ]);
           setCommentViewOpen(false);
 
-          const notificationParams: Notification = {
+          const notificationParams: NotificationCreateParams = {
             senderId: currentUser?.id,
             receiverId: res.data.other.id,
             reviewId: undefined,
