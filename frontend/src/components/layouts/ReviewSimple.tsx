@@ -20,7 +20,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 
 
 // interfaceのimport
-import { HouseData, Notification, ReviewData, TagSearch, UserData } from 'interfaces/index';
+import { HouseData, NotificationCreateParams, ReviewData, TagSearch, UserData } from 'interfaces/index';
 
 //  Contextのimport
 import { AuthContext, LikeContext } from 'App';
@@ -68,7 +68,7 @@ const ReviewSimple: React.FC<Props> = (props) => {
       reviewId: props.id
     };
 
-    const notificationParams: Notification = {
+    const notificationParams: NotificationCreateParams = {
       senderId: currentUser?.id,
       receiverId: props.user.id,
       reviewId: props.id,

@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import SendIcon from '@mui/icons-material/Send';
 
 // interfaceのimport
-import { Message, Notification, UserData } from 'interfaces/index';
+import { Message, NotificationCreateParams, UserData } from 'interfaces/index';
 
 //  Contextのimport
 import { AuthContext } from 'App';
@@ -82,7 +82,7 @@ const UserMessageRoom: React.FC = () => {
       if (res.status === 200) {
         setMessages([...messages, res.data.message]);
         setContent('');
-        const notificationParams: Notification = {
+        const notificationParams: NotificationCreateParams = {
           senderId: currentUser?.id,
           receiverId: res.data.other.userId,
           reviewId: undefined,

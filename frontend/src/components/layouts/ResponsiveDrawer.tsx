@@ -36,7 +36,6 @@ import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/NotificationsOutlined';
 import PersonIcon from '@mui/icons-material/Person';
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 // interfaceのimport
@@ -47,6 +46,7 @@ import { AuthContext, BookmarkContext, LikeContext ,NotificationContext, OwnerCo
 
 // apiを叩く関数のimport
 import { signIn, signOut } from 'lib/api/auth';
+import { updateNotifications } from 'lib/api/notification';
 
 const drawerWidth = 240;
 
@@ -86,6 +86,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
         >
           <img
             src={`${process.env.PUBLIC_URL}/logo.png`}
+            alt=''
             height='100'
           />
         </Link>
@@ -104,17 +105,6 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
             <ListItemText primary={'トップページ'}/>
           </ListItemButton>
         </ListItem>
-        {/* <ListItem disablePadding>
-          <ListItemButton
-            component={RouterLink}
-            to='/about'
-          >
-            <ListItemIcon>
-              <QuestionMarkIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Journeyとは'}/>
-          </ListItemButton>
-        </ListItem> */}
       </List>
     </div>
   );
@@ -144,16 +134,20 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
       setAnchorElSignup(null);
     };
 
-    const handleCloseNotifications= () => {
+    const handleCloseNotifications = () => {
 
-      const checkedNotifications = notifications.map(value => {return value;
+      const checkedNotifications = notifications.map((value :Notification) => {
+        return value;
       });
-      checkedNotifications.forEach(notification => {
-        notification['checked'] = true;
-      })
-      // DBのデータを書き換える処理を追加する必要がある
+      // 通知を全て既読にする
+      updateNotifications( { id: currentUser?.id } )
 
+      // 既読にした通知をstateにセットする
+      checkedNotifications.forEach((notification: Notification) => {
+        notification['checked'] = true
+      })
       setNotifications([...checkedNotifications]);
+
       setAnchorElNotification(null);
     };
 
@@ -256,51 +250,128 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
                     }}
                   >
                      { (notification.act === 'comment') && 
-                      <Typography>{notification.senderId}さんが
-                        <Typography
-                          component={RouterLink}
-                          to={`reviews/${notification.reviewId}`}
-                        >
-                         あなたの投稿{notification.reviewId}
-                        </Typography>
-                      にコメントしました</Typography>
+                        <Box sx={{ display: 'flex'}}>
+                          <Avatar
+                            component={RouterLink}
+                            to={`/users/${notification.sender.id}`}
+                            src={notification.sender.avatar.url}
+                            sx={{ mx:1 }}
+                          />
+                          <Typography>
+                            <Typography
+                              component={RouterLink}
+                              to={`users/${notification.sender.id}`}
+                            >
+                              {notification.sender.name}
+                            </Typography>
+                            さんが
+                            <Typography
+                              component={RouterLink}
+                              to={`reviews/${notification.reviewId}`}
+                            >
+                            あなたの投稿{notification.reviewId}
+                            </Typography>
+                            にコメントしました
+                          </Typography>
+                        </Box>
                     }
                      { (notification.act === 'follow') &&
-                      <Typography>{notification.senderId}さんがあなたをフォローしました</Typography> 
+                      <Box sx={{ display: 'flex' }}>
+                        <Avatar
+                          component={RouterLink}
+                          to={`/users/${notification.sender.id}`}
+                          src={notification.sender.avatar.url}
+                          sx={{ mx:1 }}
+                        />
+                        <Typography>
+                          <Typography
+                            component={RouterLink}
+                            to={`users/${notification.sender.id}`}
+                          >
+                            {notification.sender.name}
+                          </Typography>
+                          さんがあなたをフォローしました
+                        </Typography>
+                      </Box>
                      }
                      { (notification.act === 'like') &&
-                      <Typography>{notification.senderId}さんが
-                        <Typography
+                      <Box sx={{ display: 'flex' }}>
+                        <Avatar
                           component={RouterLink}
-                          to={`reviews/${notification.reviewId}`}
-                        >
-                          あなたの投稿
+                          to={`/users/${notification.sender.id}`}
+                          src={notification.sender.avatar.url}
+                          sx={{ mx:1 }}
+                        />
+                        <Typography>
+                          <Typography
+                            component={RouterLink}
+                            to={`users/${notification.sender.id}`}
+                          >
+                            {notification.sender.name}
+                          </Typography>
+                          さんが
+                          <Typography
+                            component={RouterLink}
+                            to={`reviews/${notification.reviewId}`}
+                          >
+                            あなたの投稿
+                          </Typography>
+                          をいいねしました
                         </Typography>
-                      をいいねしました</Typography> }
+                      </Box>
+                     }
                      { (notification.act === 'message') &&
-                      <Typography>{notification.senderId}さんがメッセージを送信しました</Typography>
+                      <Box sx={{ display: 'flex' }}>
+                        <Avatar
+                          component={RouterLink}
+                          to={`/users/${notification.sender.id}`}
+                          src={notification.sender.avatar.url}
+                          sx={{ mx:1 }}
+                        />
+                        <Typography>
+                          <Typography
+                            component={RouterLink}
+                            to={`users/${notification.sender.id}`}
+                          >
+                            {notification.sender.name}
+                          </Typography>
+                          さんが
+                          <Typography
+                            component={RouterLink}
+                            to={`/users/${currentUser?.id}/message_rooms`}
+                          >
+                            メッセージ
+                          </Typography>
+                          を送信しました
+                        </Typography>
+                      </Box>
                      }
                      { (notification.act === 'review') &&
-                      <Typography>{notification.senderId}さんが
-                        <Typography
+                      <Box sx={{ display: 'flex' }}>
+                        <Avatar
                           component={RouterLink}
-                          to={`reviews/${notification.reviewId}`}
-                        >
-                          口コミ
+                          to={`/users/${notification.sender.id}`}
+                          src={notification.sender.avatar.url}
+                          sx={{ mx:1 }}
+                        />
+                        <Typography>
+                          <Typography
+                            component={RouterLink}
+                            to={`users/${notification.sender.id}`}
+                            >
+                            {notification.sender.name}
+                          </Typography>
+                          さんが
+                          <Typography
+                            component={RouterLink}
+                            to={`reviews/${notification.reviewId}`}
+                            >
+                            口コミ
+                          </Typography>
+                          を作成しました
                         </Typography>
-                      を作成しました</Typography>
+                      </Box>
                      }
-                    {/* {
-                      if (notification.action === 'like') {    
-                        return (
-                          <Typography>{notification.senderId}さんが</Typography>
-                        );
-                      } else {
-                        return (
-                          <Typography>開発中</Typography>
-                        );
-                      }
-                    } */}
                   </MenuItem>
                   )
                 })
@@ -335,9 +406,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
                 onClick={handleCloseUserMenu}
               >
                 <ListItemIcon>
-                  <Badge badgeContent={1} color='error'>
-                    <MailIcon/>
-                  </Badge>
+                  <MailIcon/>
                 </ListItemIcon>
                 <ListItemText>メッセージ</ListItemText>
               </MenuItem>
@@ -521,6 +590,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
             >
               <img
                 src={`${process.env.PUBLIC_URL}/logo.png`}
+                alt=''
                 height='100'
               />
             </Link>
@@ -530,19 +600,17 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
         <Box
           component='nav'
           sx={{
-            // width: { md: drawerWidth },
             flexShrink: { md: 0 }
           }}
           aria-label='mailbox folders'
         >
           {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
           <Drawer
-            // container={container}
             variant="temporary"
             open={mobileOpen}
             onClose={handleDrawerToggle}
             ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
+              keepMounted: true,
             }}
             sx={{
               display: { xs: 'block', md: 'none' },
@@ -554,7 +622,6 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
           <Drawer
             variant="permanent"
             sx={{
-              // display: { xs: 'none', md: 'block' },
               display: 'none',
               '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
             }}
@@ -563,13 +630,7 @@ const ResponsiveDrawer: React.FC<Props> = ( {children} ) => {
             {drawer}
           </Drawer>
         </Box>
-        <Box
-          // sx={{
-            // width: { md: `calc(100% - ${drawerWidth}px)` },
-            // mt: '100px',
-            // mx: 'auto'
-          // }}
-        >
+        <Box>
           {children}
         </Box>
       <Paper
