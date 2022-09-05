@@ -4,7 +4,8 @@
 
 Ruby on Rails(API) + React(SPA) + MySQL + ECS(Fargate) + CircleCI を使用しており、レスポンシブ対応もしているので、スマホ、PCどちらからでもご確認いただけます。
 
-https://journey-enjoy.com
+~~https://journey-enjoy.com~~
+(現在停止中)
 
 ## 使用技術一覧
 ◆フロントエンド
