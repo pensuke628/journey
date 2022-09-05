@@ -7,10 +7,11 @@ class Api::V1::ReviewsController < ApplicationController
     review = current_api_v1_user.reviews.build(review_params)
     if review.save
       review.save_tag(@tag_list) if @tag_list.present?
-      render status: :ok, json: { status: 200,
-                                  review: review,
-                                  tags: review.tags,
-                                  message: 'Success Review Create' }
+      render json: review,
+             status: :ok,
+             each_serializer: ReviewSerializer,
+             include: [{ comments: :user }, :user, :house, :tags, :images],
+             message: 'Success Review Create'
     else
       render json: review.errors, status: :unprocessable_entity
     end
@@ -25,6 +26,7 @@ class Api::V1::ReviewsController < ApplicationController
 
   def update
     if @review.update(review_params)
+      @review.save_tag(@tag_list)
       response_success(:review, :update)
     else
       render json: @review.errors, status: :unprocessable_entity

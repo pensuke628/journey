@@ -65,7 +65,7 @@ export interface HouseData {
   bath: string
   shopping: string
   note: string
-  tags: Tag[] | undefined
+  tags: TagSearch[] | undefined
 }
 
 export interface Image {
@@ -102,6 +102,20 @@ export interface MessageRoom {
 
 // 通知
 export interface Notification {
+  id?: number,
+  sender: UserData,
+  receiverId: number | undefined,
+  reviewId : number | undefined,
+  commentId : number | undefined,
+  messageId : number | undefined,
+  act : string,
+  checked: boolean | undefined,
+  createdAt: Date | undefined,
+  updatedAt: Date | undefined,
+}
+
+export interface NotificationCreateParams {
+  id?: number,
   senderId: number | undefined,
   receiverId: number | undefined,
   reviewId : number | undefined,
@@ -111,6 +125,10 @@ export interface Notification {
   checked: boolean | undefined,
   createdAt: Date | undefined,
   updatedAt: Date | undefined,
+}
+
+export interface NotificationUpdate {
+  checked: boolean,
 }
 
 export interface Owner {
@@ -130,6 +148,8 @@ export interface ReviewParams {
 // 口コミ修正
 export interface ReviewUpdateParams {
   content: string
+  evaluation: number
+  tags: TagSearch[] | undefined
 }
 
 // 口コミ
@@ -143,7 +163,7 @@ export interface ReviewData {
   createdAt: Date
   updatedAt: Date
   comments: Comment[]
-  tags: Tag[] | undefined
+  tags: TagSearch[] | undefined
   images: Image[]
 }
 

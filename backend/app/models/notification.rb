@@ -7,6 +7,7 @@ class Notification < ApplicationRecord
   }
   # scope
   scope :order_new, -> { order(created_at: :desc) }
+  scope :unread_only, -> { where(checked: false) }
 
   # association
   # 通知を送ったユーザー

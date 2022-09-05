@@ -12,15 +12,15 @@ import IconButton from '@mui/material/IconButton';
 import Rating from '@mui/material/Rating';
 import Typography  from '@mui/material/Typography';
 
-// MUIIconsのimport
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import MessageIcon from '@mui/icons-material/Message';
-
+// componentのimport
 import CustomTag from 'components/utils/Tag';
 
+// MUIIconsのimport
+import FavoriteIcon from '@mui/icons-material/Favorite';
+
+
 // interfaceのimport
-import { HouseData, Notification, ReviewData, Tag, UserData } from 'interfaces/index';
+import { HouseData, NotificationCreateParams, ReviewData, TagSearch, UserData } from 'interfaces/index';
 
 //  Contextのimport
 import { AuthContext, LikeContext } from 'App';
@@ -36,7 +36,7 @@ type Props = {
   evaluation: number | null
   user: UserData
   house: HouseData
-  tags: Tag[] | undefined
+  tags: TagSearch[] | undefined
   setState: Function
 }
 
@@ -68,7 +68,7 @@ const ReviewSimple: React.FC<Props> = (props) => {
       reviewId: props.id
     };
 
-    const notificationParams: Notification = {
+    const notificationParams: NotificationCreateParams = {
       senderId: currentUser?.id,
       receiverId: props.user.id,
       reviewId: props.id,
@@ -83,15 +83,8 @@ const ReviewSimple: React.FC<Props> = (props) => {
     try {
       const res = await like(params);
       if (res.status === 200) {
-        console.log('いいねに成功');
-        // console.log(res.data.data);
         setLikingReviews([...likingReviews, res.data.data]);
-        const notification = await createNotification(notificationParams);
-        if (notification.status === 200) {
-          console.log('いいね通知を作成しました');
-        } else {
-          console.log('通知作成に失敗しました');
-        }
+        createNotification(notificationParams);
       }
     } catch (error) {
       console.log(error);
@@ -107,7 +100,6 @@ const ReviewSimple: React.FC<Props> = (props) => {
       if (res.status === 200) {
         const newLikingReview = likingReviews.filter((likedReview: ReviewData ) => likedReview.id !== props.id );
         setLikingReviews([...newLikingReview]);
-        console.log('いいね解除に成功');
       }
     } catch (error) {
       console.log(error);
@@ -193,10 +185,10 @@ const ReviewSimple: React.FC<Props> = (props) => {
           </Typography>
           <Box sx={{ display: 'flex' }}>
           {
-            props.tags?.map((tag) => {
+            props.tags?.map((tag, index) => {
               return (
                 <CustomTag
-                  key={tag.id}
+                  key={index}
                   text={tag.name}
                   onClick={(event)=> {
                     handleTagSearch(event);
