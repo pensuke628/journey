@@ -25,8 +25,16 @@ RSpec.describe 'Api::V1::Houses', type: :request do
 
   describe 'post #create' do
     context 'パラメータが不正の場合' do
-      it 'リクエストが失敗すること'
-      it 'ハウスが保存されていないこと'
+      it 'リクエストが失敗すること' do
+        post api_v1_houses_url, params: { name: 'ライダーハウス北海道' }
+        expect(response.status).to eq 422
+      end
+
+      it 'ハウスが保存されていないこと' do
+        expect do
+          post api_v1_houses_url, params: { name: 'ライダーハウス北海道' }
+        end.not_to change(House, :count)
+      end
     end
 
     context 'パラメータが正常の場合' do
@@ -57,8 +65,16 @@ RSpec.describe 'Api::V1::Houses', type: :request do
 
   describe 'patch #update' do
     context 'パラメーターが不正の場合' do
-      it 'リクエストが失敗すること'
-      it 'ハウス名が更新されていないこと'
+      it 'リクエストが失敗すること' do
+        patch api_v1_house_url(house), params: { name: '' }
+        expect(response.status).to eq 422
+      end
+
+      it 'ハウス名が更新されていないこと' do
+        expect do
+          patch api_v1_house_url(house), params: { name: '' }
+        end.not_to change(House.find_by(prefectures: '北海道'), :name)
+      end
     end
 
     context 'パラメーターが正常の場合' do
